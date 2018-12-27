@@ -6,7 +6,7 @@ local secondDuration = args[3]
 local startSignal = args[4]
 local runVerbose = args[5]
 
-if signalSide == nil or firstDuration == nil or secondDuration == nil then
+if startSignal == nil or signalSide == nil or firstDuration == nil or secondDuration == nil then
   print("Usage: rsControl side:string firstDuration:int secondDuration:int startSignal:string (on/off) [runVerbose:bool]")
   return
 end
