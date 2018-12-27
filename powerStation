@@ -1,0 +1,22 @@
+local wlSend = peripheral.wrap("top")
+local modemBaseName = "tile_thermalexpansion_cell_reinforced_name_"
+local startModemNum = 2
+local modemCount = 5
+local powerStats = {}
+local serialData
+powerStats["totalPower"] = 0
+powerStats["powerStored"] = 0
+while true
+do
+  for modemIndex = startModemNum, modemCount, 1 do 
+    modem = peripheral.wrap(modemBaseName .. modemIndex)
+    powerStats["totalPower"] = powerStats["totalPower"] + modem.getMaxEnergyStored() 
+    powerStats["powerStored"] = powerStats["powerStored"] + modem.getEnergyStored()
+  end
+
+  serialData = textutils.serialize(powerStats)
+  wlSend.transmit(105,105,serialData)
+  powerStats["totalPower"] = 0
+  powerStats["powerStored"] = 0
+  sleep(1)
+end
