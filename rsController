@@ -1,0 +1,100 @@
+local args = {...}
+
+local signalSide = args[1]
+local firstDuration = args[2]
+local secondDuration = args[3]
+local startSignal = args[4]
+local runVerbose = args[5]
+
+if startSignal == nil or signalSide == nil or firstDuration == nil or secondDuration == nil then
+  print("Usage: rsControl side:string firstDuration:int secondDuration:int startSignal:string (on/off) [runVerbose:bool]")
+  return
+end
+
+redstone.setOutput(signalSide, false)
+
+print("Hold Ctrl + T to terminate program")
+
+if runVerbose == "1" then
+  print("Side = "..signalSide)
+  print("First Duration (seconds) = "..firstDuration)
+  print("Second Duration (seconds) = "..secondDuration)
+  print("Signal is starting as "..startSignal)
+  print("")
+end
+
+local signal = startSignal == "on"
+local timeToFlip = firstDuration
+local timeElapsed = 0
+local displayUpdateDuration = 10
+
+function debug(message)
+  if runVerbose == "1" then
+    print(message)
+  end
+end
+
+function flipSignal(signal)
+  local signalStatus
+  if signal == true then
+    signalStatus = "off"
+  else
+    signalStatus = "on"
+  end
+  print("Flipping signal to "..signalStatus)
+  print("")
+  
+  return not signal
+end
+
+function isInFirstDuration()
+  if (signal == true and startSignal == "on") or
+     (signal == false and startSignal == "off") then
+    return true
+  end 
+  return false
+end
+
+function isInSecondDuration()
+  if (signal == false and startSignal == "on") or
+     (signal == true and startSignal == "off") then
+    return true
+  end
+  return false
+end
+
+local updateFrequency = 10
+
+while true do
+  redstone.setOutput(signalSide, signal)
+  sleep(1)
+  timeElapsed = timeElapsed + 1
+    
+  if isInFirstDuration() then
+    firstDuration = firstDuration - 1
+  elseif isInSecondDuration() then
+    secondDuration = secondDuration - 1
+  end
+  
+  local currentDuration
+  
+  if isInFirstDuration() and (firstDuration <= 5 or timeElapsed % updateFrequency == 0) then
+    currentDuration = firstDuration
+  elseif isInSecondDuration() and (secondDuration <= 5 or timeElapsed % updateFrequency == 0) then
+    currentDuration = secondDuration
+  end
+    
+  if currentDuration ~= nil and currentDuration > 0 then
+    debug("Seconds until flip = "..currentDuration)
+  end
+  
+  if firstDuration == 0 or secondDuration == 0 then
+    signal = flipSignal(signal)
+    if firstDuration == 0 then
+      firstDuration = args[2]
+    end
+    if secondDuration == 0 then
+      secondDuration = args[3]
+    end
+  end
+end
