@@ -14,7 +14,6 @@ while true do
 
   term.clear()
   term.setCursorPos(1.0,1.0)
---  print(message)
   print(csResponse)  
   sleep(300)
 end
