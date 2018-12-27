@@ -13,7 +13,6 @@ function orderedNext(t, state)
     -- table being iterated.
 
     local key = nil
-    --print("orderedNext: state = "..tostring(state) )
     if state == nil then
         -- the first time, generate the index
         t.__orderedIndex = __genOrderedIndex( t )
@@ -43,15 +42,9 @@ function orderedPairs(t)
 end
 
 local chest = peripheral.wrap("left")
---local monitor = peripheral.wrap("monitor_4")
 local modem = peripheral.wrap("top")
 
---monitor.setTextColor(1)
---term.redirect(monitor)
- 
 while true do
---  term.clear()
---  term.setCursorPos(1.0, 1.0)
   chest.condenseItems()
  
   local contents = chest.getAllStacks(false)
