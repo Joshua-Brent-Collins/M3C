@@ -1,22 +1,35 @@
+function format_int(n)
+  return tostring(math.floor(n)):reverse():gsub("(%d%d%d)", "%1,"):gsub(",(%-?)$", "%1"):reverse()
+end
+
 local wlSend = peripheral.wrap("top")
 local modemBaseName = "tile_thermalexpansion_cell_reinforced_name_"
 local startModemNum = 2
 local modemCount = 5
 local powerStats = {}
 local serialData
-powerStats["totalPower"] = 0
-powerStats["powerStored"] = 0
-while true
-do
+
+local totalDisplay = "Total Power"
+local storeDisplay = "Stored Power"
+local percentDisplay = "Available"
+
+powerStats[totalDisplay] = 0
+powerStats[storeDisplay] = 0
+
+while true do
   for modemIndex = startModemNum, modemCount, 1 do 
     modem = peripheral.wrap(modemBaseName .. modemIndex)
-    powerStats["totalPower"] = powerStats["totalPower"] + modem.getMaxEnergyStored() 
-    powerStats["powerStored"] = powerStats["powerStored"] + modem.getEnergyStored()
+    powerStats[totalDisplay] = powerStats[totalDisplay] + modem.getMaxEnergyStored() 
+    powerStats[storeDisplay] = powerStats[storeDisplay] + modem.getEnergyStored()
   end
 
+  powerStats[percentDisplay] = math.floor(tonumber(powerStats[storeDisplay])/tonumber(powerStats[totalDisplay]) * 100).."%"
+  powerStats[totalDisplay] = format_int(powerStats[totalDisplay])
+  powerStats[storeDisplay] = format_int(powerStats[storeDisplay])
+    
   serialData = textutils.serialize(powerStats)
   wlSend.transmit(105,105,serialData)
-  powerStats["totalPower"] = 0
-  powerStats["powerStored"] = 0
+  powerStats[totalDisplay] = 0
+  powerStats[storeDisplay] = 0
   sleep(1)
 end
