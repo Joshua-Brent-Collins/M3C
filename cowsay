@@ -1,0 +1,19 @@
+os.loadAPI("scripts/json")
+
+monitor = peripheral.wrap("back")
+term.setTextColor(1)
+term.clear()
+term.setCursorPos(1.0, 1.0)
+term.redirect(monitor)
+
+while true do
+  cnResponse = http.get("http://api.icndb.com/jokes/random").readAll()
+  cnObject = json.decode(cnResponse)
+  message = cnObject.value.joke:gsub("&quot;", "'")
+  csResponse = http.post("http://cowsay.morecode.org/say", "message="..message.."&format=text").readAll()
+
+  term.clear()
+  term.setCursorPos(1.0,1.0)
+  print(csResponse)  
+  sleep(300)
+end
