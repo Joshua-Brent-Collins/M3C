@@ -1,0 +1,19 @@
+local args = {...}
+local rcvChan = tonumber(args[3])
+local mdmSide = args[1]
+local monSide = args[2]
+local mon = peripheral.wrap(monSide)
+local mdm = peripheral.wrap(mdmSide)
+local message = ""
+term.setTextColor(1)
+term.redirect(mon)
+mdm.open(rcvChan)
+term.clear()
+print("Waiting for initial message!")
+while true do
+  event, side, sChan, rChan, message, dist = os.pullEvent("modem_message")
+  term.clear()
+  term.setCursorPos(1.0,1.0)
+  print(message)
+  sleep(1)
+end
