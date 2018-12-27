@@ -43,14 +43,15 @@ function orderedPairs(t)
 end
 
 local chest = peripheral.wrap("left")
-local monitor = peripheral.wrap("right")
- 
-monitor.setTextColor(1)
-term.redirect(monitor)
+--local monitor = peripheral.wrap("monitor_4")
+local modem = peripheral.wrap("top")
+
+--monitor.setTextColor(1)
+--term.redirect(monitor)
  
 while true do
-  term.clear()
-  term.setCursorPos(1.0, 1.0)
+--  term.clear()
+--  term.setCursorPos(1.0, 1.0)
   chest.condenseItems()
  
   local contents = chest.getAllStacks(false)
@@ -63,9 +64,13 @@ while true do
     contentsHash[item.display_name] = contentsHash[item.display_name] + item.qty
   end
  
+  local contentsMsg = ""
+  
   for key,value in orderedPairs(contentsHash) do
-    print(key .. " - " .. value)
+    contentsMsg = contentsMsg..key.." - "..value.."\n"
   end
- 
+
+  modem.transmit(101, 101, contentsMsg)
+  
   sleep(30)
 end
