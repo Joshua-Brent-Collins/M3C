@@ -2,6 +2,7 @@ function drawBargraph(fillPercent, mon, fillColor)
   local orgTerm = term.current()
   local graphCoords = {}
   local width, height = mon.getSize()
+  local bgColor = term.getBackgroundColor()
   graphCoords["X1"] = width - (width/3)
   graphCoords["Y1"] = height - (height/100) * fillPercent
   graphCoords["X2"] = width - (width/20)
@@ -11,6 +12,7 @@ function drawBargraph(fillPercent, mon, fillColor)
   mon.clear()
   term.clear()
   paintutils.drawFilledBox(graphCoords["X1"], graphCoords["Y1"], graphCoords["X2"], graphCoords["Y2"], fillColor)
+  term.setBackgroundColor(bgColor)
   term.redirect(orgTerm)
 end
 
