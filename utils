@@ -1,0 +1,38 @@
+function drawBargraph(fillPercent, mon, fillColor)
+  local orgTerm = term.current()
+  local graphCoords = {}
+  local width, height = mon.getSize()
+  local bgColor = term.getBackgroundColor()
+  graphCoords["X1"] = width - (width/3)
+  graphCoords["Y1"] = height - (height/100) * fillPercent
+  graphCoords["X2"] = width - (width/20)
+  graphCoords["Y2"] = height
+  
+  term.redirect(mon)
+  mon.clear()
+  term.clear()
+  paintutils.drawFilledBox(graphCoords["X1"], graphCoords["Y1"], graphCoords["X2"], graphCoords["Y2"], fillColor)
+  term.setBackgroundColor(bgColor)
+  term.redirect(orgTerm)
+end
+
+function findAndWrap(devType)
+  local devices = peripheral.getNames()
+  local monitor = nil
+  for id, devName in pairs(devices) do
+    if peripheral.getType(devName) == devType then
+      return peripheral.wrap(devName)
+    end
+  end
+end
+
+function findAndWrapAll(devType)
+  local deviceWrappers = {}
+  local devices = peripheral.getNames()
+  for id, devName in pairs(devices) do
+    if peripheral.getType(devName) == devType then
+      deviceWrappers[(devName .. "_" .. devType)] = peripheral.wrap(devName)
+    end
+  end
+  return deviceWrappers
+end
