@@ -1,0 +1,36 @@
+function setLightsColor(lights, color)
+  for lightKey, light in pairs(lights) do
+    light.setColor(color)
+  end
+end
+
+os.loadAPI("M3C/utils")
+term.clear()
+
+local sensor = utils.findAndWrap("openperipheral_sensor")
+local lights = utils.findAndWrapAll("thermalexpansion_light")
+local players = {}
+local playerPreferences = {}
+
+playerPreferences["Duu82"] = 0xFF0000
+playerPreferences["leftyj"] = 0x0000FF
+
+while true do
+  players = sensor.getPlayers()
+  if not next(players) then
+    setLightsColor(lights, 0x000000)
+  else
+    for playerKey, playerData in pairs(players) do
+      local colorToSet
+      if playerPreferences[playerData.name] ~= nil then
+        colorToSet = playerPreferences[playerData.name]
+      else
+        colorToSet = 0x00FF00
+      end
+      
+      setLightsColor(lights, playerPreferences[playerData.name])
+    end
+  end
+  
+  sleep(1)
+end
