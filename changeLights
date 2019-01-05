@@ -16,21 +16,17 @@ playerPreferences["Duu82"] = 0xFF0000
 playerPreferences["leftyj"] = 0x0000FF
 
 while true do
+  local colorToSet = nil
   players = sensor.getPlayers()
-  if not next(players) then
-    setLightsColor(lights, 0x000000)
-  else
-    for playerKey, playerData in pairs(players) do
-      local colorToSet
-      if playerPreferences[playerData.name] ~= nil then
-        colorToSet = playerPreferences[playerData.name]
-      else
-        colorToSet = 0x00FF00
-      end
-      
-      setLightsColor(lights, playerPreferences[playerData.name])
-    end
+  for playerKey, playerData in pairs(players) do
+    colorToSet = playerPreferences[playerData.name]
   end
+  
+  if colorToSet == nil then
+    colorToSet = 0x000000
+  end
+  
+  setLightsColor(lights, colorToSet)
   
   sleep(1)
 end
