@@ -1,8 +1,8 @@
 os.loadAPI("M3C/utils")
 os.loadAPI("M3C/kvApi")
 
-local meDrive = peripheral.wrap("left")
-local modem = peripheral.wrap("back")
+local meDrive = utils.findAndWrap("tiledrive")
+local modem = utils.findAndWrap("modem")
 
 kvApi.initializeWirelessModems()
 
