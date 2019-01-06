@@ -1,23 +1,20 @@
 os.loadAPI("M3C/utils")
+os.loadAPI("M3C/kvApi")
 
-function format_int(n)
-  return tostring(math.floor(n)):reverse():gsub("(%d%d%d)", "%1,"):gsub(",(%-?)$", "%1"):reverse()
-end
-
-local wlSend = peripheral.wrap("top")
 local energyCellBaseName = "tile_thermalexpansion_cell_reinforced_name"
 local energyCells = {}
 local powerStats = {}
-local serialData
 
-local totalDisplay = "Total Power"
-local storeDisplay = "Stored Power"
+local totalDisplay = "Total"
+local storeDisplay = "Stored"
 local percentDisplay = "Available"
 
 powerStats[totalDisplay] = 0
 powerStats[storeDisplay] = 0
 
 energyCells = utils.findAndWrapAll(energyCellBaseName)
+
+kvApi.initializeWirelessModems()
 
 while true do
   for index,energyCell in pairs(energyCells) do
@@ -26,11 +23,11 @@ while true do
   end
 
   powerStats[percentDisplay] = math.floor(tonumber(powerStats[storeDisplay])/tonumber(powerStats[totalDisplay]) * 100)
-  powerStats[totalDisplay] = format_int(powerStats[totalDisplay])
-  powerStats[storeDisplay] = format_int(powerStats[storeDisplay])
-    
-  serialData = textutils.serialize(powerStats)
-  wlSend.transmit(105,105,serialData)
+  powerStats[totalDisplay] = powerStats[totalDisplay]
+  powerStats[storeDisplay] = powerStats[storeDisplay]
+  
+  kvApi.clientStore("powerStatus", textutils.serialize(powerStats))
+  
   powerStats[totalDisplay] = 0
   powerStats[storeDisplay] = 0
   sleep(1)
