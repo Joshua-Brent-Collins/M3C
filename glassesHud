@@ -1,0 +1,41 @@
+os.loadAPI("M3C/utils")
+os.loadAPI("M3C/kvApi")
+
+local glasses = utils.findAndWrap("openperipheral_bridge")
+
+function drawBox(height)
+  glasses.addBox(1,1,180,height,0xFFFFFF,.2)
+end
+
+function display(text)
+ glasses.clear()
+
+ local yPos = 5
+ for index,line in pairs(text) do
+   glasses.addText(5, yPos, line, 0xF5F5F5)
+   yPos = yPos + 10
+ end
+ drawBox(yPos)
+ 
+ glasses.sync()
+end
+
+kvApi.initializeWirelessModems()
+
+while true do
+  local kvPowerStatus = textutils.unserialize(kvApi.clientGet("powerStatus"))
+  local kvMeStatus = textutils.unserialize(kvApi.clientGet("meStatus"))
+
+  local displayText = {}
+  local powerStatus = textutils.unserialize(kvPowerStatus.msg)
+  local meStatus = textutils.unserialize(kvMeStatus.msg)
+  
+  displayText={
+    ["Power"] = "Power: "..utils.formatInt(powerStatus.Available).."%",
+    ["MESlots"] = "ME Slots Used: "..utils.formatInt(meStatus.usedSlots).."/"..utils.formatInt(meStatus.totalSlots),
+    ["MEBytes"] = "ME Bytes Used: "..utils.formatInt(meStatus.usedBytes).."/"..utils.formatInt(meStatus.totalBytes)
+  }
+
+  display(displayText)
+  sleep(1)
+end
