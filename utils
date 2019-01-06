@@ -40,3 +40,7 @@ function printTable(tableData)
     print(key .. ":" .. value)
   end
 end
+
+function formatInt(num)
+  return tostring(math.floor(num)):reverse():gsub("(%d%d%d)", "%1,"):gsub(",(%-?)$", "%1"):reverse()
+end
