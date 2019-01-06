@@ -1,29 +1,37 @@
 os.loadAPI("M3C/utils")
 
-local args = {...}
 local kvDataStore = {}
 local kvProtocol = "kvXChange"
 local hostName = "kvServer"
+--Converstion from os.time() = 50 sec intervals 
+local backupFreqMin = (300 / 50)
 
-function flushToDisk(kvTable)
-  local storage = utils.findAndWrap("drive")
-  local fPath = storage.getMountPath()
-  local dataFile = nil
-  fs.delete(fPath .. "/kvData")
-  dataFile = fs.open(fPath .. "/kvData", "w")
-  dataFile.write(textutils.serialize(kvTable))
-  dataFile.flush()
-  dataFile.close()
+function flushToDisk()
+  while true do
+    if math.floor(os.time() % backupFreqMin) == 0 then
+      local storage = utils.findAndWrap("drive")
+      local fPath = storage.getMountPath()
+      local dataFile = nil
+      print("Begin disk flush...")
+      fs.delete(fPath .. "/kvData")
+      dataFile = fs.open(fPath .. "/kvData", "w")
+      dataFile.write(textutils.serialize(kvDataStore))
+      dataFile.flush()
+      dataFile.close()
+      print("Disk flush finished.")
+    end
+    sleep(50)
+  end
 end
 
-function loadFromDisk() 
+function loadFromDisk()
+  print("Loading database from disk...")
   local storage = utils.findAndWrap("drive")
   local fPath = storage.getMountPath()
   local dataFile = fs.open(fPath .. "/kvData", "r")
-  local kvData = nil
-  kvData = textutils.unserialize(dataFile.readAll())
+  kvDataStore = textutils.unserialize(dataFile.readAll())
   dataFile.close()
-  return kvData
+  print("Finished loading database from disk.")
 end
 
 function initializeWirelessModems()
@@ -56,12 +64,13 @@ function recv(response)
   end
 end
 
-function kvServer()
+function server()
   initializeWirelessModems()
   rednet.host(kvProtocol, hostName)
   while true do
-    local from, msg, conInfo = rednet.receive(kvProtocol)
-    local req = textutils.unserialize(msg)
+    local rawReqData = {}
+    parallel.waitForAny(function() recv(rawReqData) end, function() flushToDisk() end)
+    local req = textutils.unserialize(rawReqData["message"])
     local resp = {}
     resp["status"] = 200
     resp["msg"] = "OK"          
@@ -80,7 +89,7 @@ function kvServer()
       resp["msg"] = "No valid command found!"
       print("No Clue -\\_(**)_/-")
     end
-    send(from, resp)
+    send(rawReqData["senderId"], resp)
   end
 end
 
@@ -105,11 +114,3 @@ function clientStore(key, value)
   return respData["message"]
 end
 
---local test = {}
---test["Bob"] = "Ross"
---test["Fred"] = "Rogers"
---flushToDisk(test)
---local loaded = loadFromDisk()
---for fName, lName in pairs(loaded) do print(lName .. ", " .. fName) end
-
-kvServer()
