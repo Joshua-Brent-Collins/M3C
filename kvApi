@@ -1,0 +1,121 @@
+os.loadAPI("M3C/utils")
+
+local kvDataStore = {}
+local kvProtocol = "kvXChange"
+local hostName = "kvServer"
+--conversion from os.time() = 50 sec intervals 
+local backupFreqMin = 6
+
+function flushToDisk()
+  while true do
+    if (math.floor(os.time() % backupFreqMin)) == 0 then
+      local storage = utils.findAndWrap("drive")
+      local fPath = storage.getMountPath()
+      local dataFile = nil
+      print("Begin disk flush...")
+      fs.delete(fPath .. "/kvData")
+      dataFile = fs.open(fPath .. "/kvData", "w")
+      dataFile.write(textutils.serialize(kvDataStore))
+      dataFile.flush()
+      dataFile.close()
+      print("Disk flush finished.")
+    end
+    sleep(50)
+  end
+end
+
+function loadFromDisk()
+  print("Loading database from disk...")
+  local storage = utils.findAndWrap("drive")
+  local fPath = storage.getMountPath()
+  local dataFile = fs.open(fPath .. "/kvData", "r")
+  kvDataStore = textutils.unserialize(dataFile.readAll())
+  dataFile.close()
+  print("Finished loading database from disk.")
+end
+
+function initializeWirelessModems()
+ local modems = utils.findAndWrapAll("modem")
+ for name, wrapper in pairs(modems) do
+   if wrapper.isWireless() == true then
+     local side = string.sub(string.match(name,".*_"), 1, -2)
+     print("Initializing wireless " .. name)
+     rednet.open(side)
+     print("Initialized wireless " .. name)
+   end
+ end 
+end
+
+function store(key, serialData)
+  kvDataStore[key] = serialData
+end
+
+function get(key)
+  return kvDataStore[key]
+end
+
+function send(id, msg) 
+  rednet.send(id, textutils.serialize(msg), kvProtocol)
+end
+
+function recv(response)
+  while response["message"] == nil do 
+    response["senderId"], response["message"], response["connInfo"] = rednet.receive(kvProtocol, 1)
+  end
+end
+
+function server()
+  initializeWirelessModems()
+  rednet.host(kvProtocol, hostName)
+  while true do
+    local rawReqData = {}
+    parallel.waitForAny(function() recv(rawReqData) end, function() flushToDisk() end)
+    local req = textutils.unserialize(rawReqData["message"])
+    local resp = {}
+    resp["status"] = 200
+    resp["msg"] = "OK"          
+    if req.cmd == "store" then
+      print("store request received for key: " .. req.dataKey)
+      if(req.dataKey == nil or req.dataValue == nil) then
+        resp["status"] = 400
+        resp["msg"] = "Could not complete request check fields and try again."
+      else 
+        store(req.dataKey, req.dataValue)
+      end
+    elseif req.cmd == "get" then
+      print("get request received for key: " .. req.dataKey)
+      resp["msg"] = get(req.dataKey)
+      if(resp["msg"] == nil) then
+        resp["status"] = 400
+        resp["msg"] = "No key found!"
+      end 
+    else
+      resp["status"] = 400
+      resp["msg"] = "No valid command found!"
+      print("No Clue -\\_(**)_/-")
+    end
+    send(rawReqData["senderId"], resp)
+  end
+end
+
+function clientGet(key)
+  local kvReq = {}
+  local respData = {}
+  kvReq["cmd"] = "get"
+  kvReq["dataKey"] = key
+  local serverId = rednet.lookup(kvProtocol, hostName) 
+  parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end) 
+  return respData["message"]
+end
+
+function clientStore(key, value)
+  local kvReq = {}
+  local respData = {}
+  kvReq["cmd"] = "store"
+  kvReq["dataKey"] = key
+  kvReq["dataValue"] = value
+  local serverId = rednet.lookup(kvProtocol, hostName)
+  parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end)
+  return respData["message"]
+end
+

@@ -1,0 +1,13 @@
+os.loadAPI("/M3C/kvApi")
+local args = {...}
+local options = {}
+
+options["server"] = function()
+  print("Starting Server...")
+  if args[2] == "restore" then
+    kvApi.loadFromDisk()
+  end  
+  kvApi.server()
+end
+
+options[(args[1])]()
