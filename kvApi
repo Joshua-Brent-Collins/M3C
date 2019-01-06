@@ -8,7 +8,7 @@ local backupFreqMin = 6
 
 function flushToDisk()
   while true do
-    if math.floor(os.time() % backupFreqMin) == 0 then
+    if (os.time() % backupFreqMin) == 0 then
       local storage = utils.findAndWrap("drive")
       local fPath = storage.getMountPath()
       local dataFile = nil
