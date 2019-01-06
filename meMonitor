@@ -1,0 +1,35 @@
+os.loadAPI("M3C/utils")
+os.loadAPI("M3C/kvApi")
+
+local meDrive = peripheral.wrap("left")
+local modem = peripheral.wrap("back")
+
+kvApi.initializeWirelessModems()
+
+while true do
+  local drives = meDrive.getAllStacks(false)
+  local driveData = {
+    ["freeSlots"] = 0,
+    ["usedSlots"] = 0,
+    ["totalSlots"] = 0,
+    ["freeBytes"] = 0,
+    ["usedBytes"] = 0,
+    ["totalBytes"] = 0
+  }
+  
+  for index, drive in pairs(drives) do
+    local me_cell = drive.me_cell
+    
+    driveData["freeSlots"] = driveData["freeSlots"] + me_cell.freeTypes
+    driveData["usedSlots"] = driveData["usedSlots"] + me_cell.usedTypes
+    driveData["totalSlots"] = driveData["totalSlots"] + me_cell.totalTypes
+    
+    driveData["freeBytes"] = driveData["freeBytes"] + me_cell.freeBytes
+    driveData["usedBytes"] = driveData["usedBytes"] + me_cell.usedBytes
+    driveData["totalBytes"] = driveData["totalBytes"] + me_cell.totalBytes
+  end
+  
+  kvApi.clientStore("meStatus", textutils.serialize(driveData))
+
+  sleep(1)
+end
