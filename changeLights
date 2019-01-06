@@ -1,10 +1,11 @@
+os.loadAPI("M3C/utils")
+
 function setLightsColor(lights, color)
   for lightKey, light in pairs(lights) do
     light.setColor(color)
   end
 end
 
-os.loadAPI("M3C/utils")
 term.clear()
 
 local sensor = utils.findAndWrap("openperipheral_sensor")
