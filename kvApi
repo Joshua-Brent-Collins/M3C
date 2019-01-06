@@ -3,8 +3,8 @@ os.loadAPI("M3C/utils")
 local kvDataStore = {}
 local kvProtocol = "kvXChange"
 local hostName = "kvServer"
---Converstion from os.time() = 50 sec intervals 
-local backupFreqMin = (300 / 50)
+--conversion from os.time() = 50 sec intervals 
+local backupFreqMin = 6
 
 function flushToDisk()
   while true do
