@@ -1,22 +1,48 @@
 -- Assumes sensor on top
 -- Opens Door when ANY player is nearby
-
+ 
 -- wrap sensor, assumes sensor is on top
 sensor = peripheral.wrap("top")
-
--- initalizing players 
+nb = peripheral.wrap("back")
+ 
+-- initalizing players
 players = sensor.getPlayers()
-
+flag = true
+ 
 -- shameless while 1 loop
 while 1 do
   players = sensor.getPlayers()
 --if "I DID NOT find a player, CLOSE THE DOOR"
-  if not next(players) then 
+  if not next(players) then
     redstone.setAnalogOutput("left", 15)
     redstone.setAnalogOutput("right", 15)
+    if(flag) then
+      sleep(0.3)
+      nb.setPitch(16)
+      nb.triggerNote()
+      sleep(0.1)
+      nb.setPitch(24)
+      nb.triggerNote()
+      sleep(0.1)
+      nb.setPitch(16)
+      nb.triggerNote()
+    end
+    flag = false
   else
 --else "I DID find a player, OPEN THE DOOR"
     redstone.setAnalogOutput("left", 0)
     redstone.setAnalogOutput("right", 0)
+    if(not flag) then
+      sleep(0.3)
+      nb.setPitch(24)
+      nb.triggerNote()
+      sleep(0.1)
+      nb.setPitch(16)
+      nb.triggerNote()
+      sleep(0.1)
+      nb.setPitch(24)
+      nb.triggerNote()
+      flag = true
+    end
   end
 end
