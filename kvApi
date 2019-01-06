@@ -76,7 +76,12 @@ function server()
     resp["msg"] = "OK"          
     if req.cmd == "store" then
       print("store request received for key: " .. req.dataKey)
-      store(req.dataKey, req.dataValue)
+      if(req.dataKey == nil or req.dataValue == nil) then
+        resp["status"] = 400
+        resp["msg"] = "Could not complete request check fields and try again."
+      else 
+        store(req.dataKey, req.dataValue)
+      end
     elseif req.cmd == "get" then
       print("get request received for key: " .. req.dataKey)
       resp["msg"] = get(req.dataKey)
