@@ -7,42 +7,45 @@ nb = peripheral.wrap("back")
  
 -- initalizing players
 players = sensor.getPlayers()
-flag = true
+
+-- indicates if the door is/was open in order to play correct sound for each
+isOpen = true
+
+-- pitch to be used for doorbell
+pitchA = 24
+pitchB = 16
+
+-- function playDoorbell
+function playDoorbell(pitch1, pitch2)
+   sleep(0.3)
+   nb.setPitch(pitch1)
+   nb.triggerNote()
+   sleep(0.1)
+   nb.setPitch(pitch2)
+   nb.triggerNote()
+   sleep(0.1)
+   nb.setPitch(pitch1)
+   nb.triggerNote()
+end
  
 -- shameless while 1 loop
 while 1 do
   players = sensor.getPlayers()
---if "I DID NOT find a player, CLOSE THE DOOR"
-  if not next(players) then
-    redstone.setAnalogOutput("left", 15)
-    redstone.setAnalogOutput("right", 15)
-    if(flag) then
-      sleep(0.3)
-      nb.setPitch(16)
-      nb.triggerNote()
-      sleep(0.1)
-      nb.setPitch(24)
-      nb.triggerNote()
-      sleep(0.1)
-      nb.setPitch(16)
-      nb.triggerNote()
-    end
-    flag = false
-  else
---else "I DID find a player, OPEN THE DOOR"
-    redstone.setAnalogOutput("left", 0)
-    redstone.setAnalogOutput("right", 0)
-    if(not flag) then
-      sleep(0.3)
-      nb.setPitch(24)
-      nb.triggerNote()
-      sleep(0.1)
-      nb.setPitch(16)
-      nb.triggerNote()
-      sleep(0.1)
-      nb.setPitch(24)
-      nb.triggerNote()
-      flag = true
-    end
+    if not next(players) then
+    -- "I DID NOT find a player, CLOSE THE DOOR"
+      redstone.setAnalogOutput("left", 15)
+      redstone.setAnalogOutput("right", 15)
+      if(isOpen) then
+        playDoorbell(pitchB, pitchA)
+        isOpen = false
+      end
+    else
+    -- "I DID find a player, OPEN THE DOOR"
+      redstone.setAnalogOutput("left", 0)
+      redstone.setAnalogOutput("right", 0)
+      if(not isOpen) then
+        playDoorbell(pitchA, pitchB)
+        isOpen = true
+      end
   end
 end
