@@ -1,0 +1,22 @@
+os.loadAPI("M3C/kvApi")
+os.loadAPI("M3C/utils")
+
+local blutoniumDSU = peripheral.wrap("deep_storage_unit_0")
+local yelloriumDSU = peripheral.wrap("deep_storage_unit_1")
+local modem = utils.findAndWrap("modem")
+
+kvApi.initializeWirelessModems()
+
+while true do
+  local blutoniumIngots = blutoniumDSU.getStoredItems().qty
+  local yelloriumIngots = yelloriumDSU.getStoredItems().qty
+  local contentsHash = {}
+  
+  contentsHash["Blutonium"] = blutoniumIngots
+  contentsHash["Yellorium"] = yelloriumIngots
+  contentsMsg = textutils.serialize(contentsHash)
+
+  kvApi.clientStore("reactorStatus", contentsMsg)
+   
+  sleep(30)
+end
