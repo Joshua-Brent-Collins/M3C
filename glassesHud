@@ -32,7 +32,7 @@ function convertMEBytes(bytes)
     bytes = utils.round(bytes / 1000)
   elseif byteLength > 6 and byteLength <= 9 then
     postfix = "MB"
-    bytes = utils.round(bytes / 1000000000)
+    bytes = utils.round(bytes / 1000000)
   elseif byteLength > 9 and byteLength <= 12 then
     postfix = "GB"
     bytes = utils.round(bytes / 1000000000)
