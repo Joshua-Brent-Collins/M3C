@@ -17,8 +17,8 @@ function display(text)
    glasses.addText(5, yPos, index .. " " .. line, boxTextColor)
    yPos = yPos + 10
  end
- drawBox(yPos)
 
+ drawBox(yPos)
  glasses.sync()
 end
 
