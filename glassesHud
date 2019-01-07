@@ -6,7 +6,7 @@ local boxBgColor = 0xFFFFFF
 local boxTextColor = 0xF5F5F5
 
 function drawBox(height)
-  glasses.addBox(1, 1, 180, height, boxBgColor, .2)
+  glasses.addBox(1, 1, 155, height, boxBgColor, .2)
 end
 
 function display(text)
@@ -18,8 +18,28 @@ function display(text)
    yPos = yPos + 10
  end
  drawBox(yPos)
- 
+
  glasses.sync()
+end
+
+function convertMEBytes(bytes, units)
+  local byteLength = string.len(bytes)
+  local postfix = "B"
+
+  if byteLength > 3 and byteLength <= 6 then
+    postfix = "KB"
+    bytes = bytes/1000
+  elseif byteLength > 6 and byteLength <= 9 then
+    postfix = "MB"
+    bytes = bytes/10000
+  elseif byteLength > 9 and byteLength <= 12 then
+    postfix = "GB"
+    bytes = bytes/100000
+  else
+    return bytes
+  end
+
+  return math.floor(bytes) .. postfix
 end
 
 kvApi.initializeWirelessModems()
@@ -33,11 +53,11 @@ while true do
   local powerStatus = textutils.unserialize(kvPowerStatus.msg)
   local meStatus = textutils.unserialize(kvMeStatus.msg)
   local reactorStatus = textutils.unserialize(kvReactorStatus.msg)
-  
+
   displayText={
     ["Power"] = "Power: "..utils.formatInt(powerStatus.Available).."%",
     ["MESlots"] = "ME Slots Used: "..utils.formatInt(meStatus.usedSlots).."/"..utils.formatInt(meStatus.totalSlots),
-    ["MEBytes"] = "ME Bytes Used: "..utils.formatInt(meStatus.usedBytes).."/"..utils.formatInt(meStatus.totalBytes),
+    ["MEBytes"] = "ME Bytes Used: "..convertMEBytes(meStatus.usedBytes).."/"..convertMEBytes(meStatus.totalBytes),
     ["BluIngots"] = "Blutonium Ingots: "..utils.formatInt(reactorStatus.Blutonium),
     ["YelIngots"] = "Yellorium Ingots: "..utils.formatInt(reactorStatus.Yellorium)
   }
@@ -46,3 +66,6 @@ while true do
   sleep(1)
 end
 
+function convertMEBytes(bytes)
+
+end
