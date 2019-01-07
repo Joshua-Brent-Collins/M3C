@@ -22,7 +22,7 @@ function display(text)
  glasses.sync()
 end
 
-function convertMEBytes(bytes, units)
+function convertMEBytes(bytes)
   local byteLength = string.len(bytes)
   local postfix = "B"
 
