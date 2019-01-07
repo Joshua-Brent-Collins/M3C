@@ -38,7 +38,7 @@ function convertMEBytes(bytes)
     bytes = bytes / 1000000000
   end
 
-  return utils.round(bytes) .. postfix
+  return utils.round(bytes, 1) .. postfix
 end
 
 kvApi.initializeWirelessModems()
