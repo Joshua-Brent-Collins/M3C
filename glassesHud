@@ -65,7 +65,3 @@ while true do
   display(displayText)
   sleep(1)
 end
-
-function convertMEBytes(bytes)
-
-end
