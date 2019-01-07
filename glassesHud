@@ -45,20 +45,16 @@ end
 kvApi.initializeWirelessModems()
 
 while true do
-  local kvPowerStatus = textutils.unserialize(kvApi.clientGet("powerStatus"))
-  local kvMeStatus = textutils.unserialize(kvApi.clientGet("meStatus"))
-  local kvReactorStatus = textutils.unserialize(kvApi.clientGet("reactorStatus"))
-
-  local powerStatus = textutils.unserialize(kvPowerStatus.msg)
-  local meStatus = textutils.unserialize(kvMeStatus.msg)
-  local reactorStatus = textutils.unserialize(kvReactorStatus.msg)
+  local powerStatus = utils.getkvApiMsg(kvApi.clientGet("powerStatus"))
+  local meStatus = utils.getkvApiMsg(kvApi.clientGet("meStatus"))
+  local reactor = utils.getkvApiMsg(kvApi.clientGet("reactorStatus"))
 
   local displayText={
     ["Power"] = utils.formatInt(powerStatus.Available) .. "%",
     ["ME Slots"] = utils.formatInt(meStatus.usedSlots) .. "/" .. utils.formatInt(meStatus.totalSlots),
     ["ME Bytes"] = convertMEBytes(meStatus.usedBytes) .. "/" .. convertMEBytes(meStatus.totalBytes),
-    ["Blutonium"] = utils.formatInt(reactorStatus.Blutonium),
-    ["Yellorium"] = utils.formatInt(reactorStatus.Yellorium)
+    ["Blutonium"] = utils.formatInt(reactor.Blutonium),
+    ["Yellorium"] = utils.formatInt(reactor.Yellorium)
   }
 
   display(displayText)
