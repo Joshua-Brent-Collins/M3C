@@ -31,5 +31,5 @@ while true do
   
   kvApi.clientStore("meStatus", textutils.serialize(driveData))
 
-  sleep(1)
+  sleep(5)
 end
