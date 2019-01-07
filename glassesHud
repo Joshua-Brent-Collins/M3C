@@ -29,16 +29,16 @@ function convertMEBytes(bytes)
 
   if byteLength > 3 and byteLength <= 6 then
     postfix = "KB"
-    bytes = utils.round(bytes / 1000)
+    bytes = bytes / 1000
   elseif byteLength > 6 and byteLength <= 9 then
     postfix = "MB"
-    bytes = utils.round(bytes / 1000000)
+    bytes = bytes / 1000000
   elseif byteLength > 9 and byteLength <= 12 then
     postfix = "GB"
-    bytes = utils.round(bytes / 1000000000)
+    bytes = bytes / 1000000000
   end
 
-  return bytes .. postfix
+  return utils.round(bytes) .. postfix
 end
 
 kvApi.initializeWirelessModems()
