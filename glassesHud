@@ -1,0 +1,48 @@
+os.loadAPI("M3C/utils")
+os.loadAPI("M3C/kvApi")
+
+local glasses = utils.findAndWrap("openperipheral_bridge")
+local boxBgColor = 0xFFFFFF
+local boxTextColor = 0xF5F5F5
+
+function drawBox(height)
+  glasses.addBox(1, 1, 180, height, boxBgColor, .2)
+end
+
+function display(text)
+ glasses.clear()
+
+ local yPos = 5
+ for index,line in utils.orderTable(text) do
+   glasses.addText(5, yPos, line, boxTextColor)
+   yPos = yPos + 10
+ end
+ drawBox(yPos)
+ 
+ glasses.sync()
+end
+
+kvApi.initializeWirelessModems()
+
+while true do
+  local kvPowerStatus = textutils.unserialize(kvApi.clientGet("powerStatus"))
+  local kvMeStatus = textutils.unserialize(kvApi.clientGet("meStatus"))
+  local kvReactorStatus = textutils.unserialize(kvApi.clientGet("reactorStatus"))
+
+  local displayText = {}
+  local powerStatus = textutils.unserialize(kvPowerStatus.msg)
+  local meStatus = textutils.unserialize(kvMeStatus.msg)
+  local reactorStatus = textutils.unserialize(kvReactorStatus.msg)
+  
+  displayText={
+    ["Power"] = "Power: "..utils.formatInt(powerStatus.Available).."%",
+    ["MESlots"] = "ME Slots Used: "..utils.formatInt(meStatus.usedSlots).."/"..utils.formatInt(meStatus.totalSlots),
+    ["MEBytes"] = "ME Bytes Used: "..utils.formatInt(meStatus.usedBytes).."/"..utils.formatInt(meStatus.totalBytes),
+    ["BluIngots"] = "Blutonium Ingots: "..utils.formatInt(reactorStatus.Blutonium),
+    ["YelIngots"] = "Yellorium Ingots: "..utils.formatInt(reactorStatus.Yellorium)
+  }
+
+  display(displayText)
+  sleep(1)
+end
+
