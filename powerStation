@@ -30,5 +30,5 @@ while true do
   
   powerStats[totalDisplay] = 0
   powerStats[storeDisplay] = 0
-  sleep(1)
+  sleep(5)
 end
