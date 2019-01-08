@@ -14,7 +14,7 @@ function display(text)
 
  local yPos = 5
  for index,line in utils.orderTable(text) do
-   glasses.addText(5, yPos, index .. " " .. line, boxTextColor)
+   glasses.addText(5, yPos, index .. ": " .. line, boxTextColor)
    yPos = yPos + 10
  end
 
