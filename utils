@@ -61,7 +61,11 @@ function printTable(tableData)
 end
 
 function formatInt(num)
-  return tostring(math.floor(num)):reverse():gsub("(%d%d%d)", "%1,"):gsub(",(%-?)$", "%1"):reverse()
+  if tonumber(num) == nil then
+    return -1
+  else
+    return tostring(math.floor(num)):reverse():gsub("(%d%d%d)", "%1,"):gsub(",(%-?)$", "%1"):reverse()
+  end
 end
 
 function round(num, places)
@@ -69,6 +73,12 @@ function round(num, places)
   return math.floor(num * mult + 0.5) / mult
 end
 
-function getkvApiMsg(key)
-  return textutils.unserialize(textutils.unserialize(key).msg)
+function rednetLookupWithRetry(protocol, host)
+  local hostId = nil
+  while hostId == nil do
+    hostId = rednet.lookup(protocol, host)  
+    sleep(1)
+  end
+  return hostId
 end
+

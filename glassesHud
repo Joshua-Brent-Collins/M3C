@@ -44,9 +44,9 @@ end
 kvApi.initializeWirelessModems()
 
 while true do
-  local powerStatus = utils.getkvApiMsg(kvApi.clientGet("powerStatus"))
-  local meStatus = utils.getkvApiMsg(kvApi.clientGet("meStatus"))
-  local reactor = utils.getkvApiMsg(kvApi.clientGet("reactorStatus"))
+  local powerStatus = kvApi.deserializeKvResponse(kvApi.clientGet("powerStatus"))
+  local meStatus = kvApi.deserializeKvResponse(kvApi.clientGet("meStatus"))
+  local reactor = kvApi.deserializeKvResponse(kvApi.clientGet("reactorStatus"))
 
   local displayText={
     ["Power"] = utils.formatInt(powerStatus.Available) .. "%",
