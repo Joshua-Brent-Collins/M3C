@@ -1,0 +1,7 @@
+os.loadAPI("M3C/utils")
+os.loadAPI("M3C/util.dsu")
+
+local meDsus = utils.findAndWrapAll("deep_storage_unit")
+
+dsuHelper.dsu.setDsus(meDsus)
+dsuHelper.dsu.print()
