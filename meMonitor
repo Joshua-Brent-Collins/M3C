@@ -29,6 +29,7 @@ while true do
     driveData["totalBytes"] = driveData["totalBytes"] + me_cell.totalBytes
   end
   
+  print("Sending to KV at " .. os.day() .. ": " .. os.time())
   kvApi.clientStore("meStatus", textutils.serialize(driveData))
 
   sleep(5)

@@ -16,7 +16,8 @@ while true do
   contentsHash["Yellorium"] = yelloriumIngots
   contentsMsg = textutils.serialize(contentsHash)
 
+  print("Sending to KV at " .. os.day() .. ": " .. os.time())
   kvApi.clientStore("reactorStatus", contentsMsg)
    
-  sleep(30)
+  sleep(5)
 end
