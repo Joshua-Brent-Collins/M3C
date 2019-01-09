@@ -1,0 +1,13 @@
+-- Plays tones at simi-random intervals
+-- like windchimes but with more math
+-- Meant to be used on several systems
+
+nblock = peripheral.wrap("back")
+
+math.randomseed(os.time())
+
+while true do 
+  nblock.setPitch(math.random(0,25))
+  sleep(math.random(1,2))
+  nblock.triggerNote()
+end
