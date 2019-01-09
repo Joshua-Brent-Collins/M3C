@@ -10,16 +10,16 @@ function drawBox(height)
 end
 
 function display(text)
- glasses.clear()
-
- local yPos = 5
- for index,line in utils.orderTable(text) do
-   glasses.addText(5, yPos, index .. ": " .. line, boxTextColor)
-   yPos = yPos + 10
- end
-
- drawBox(yPos)
- glasses.sync()
+  glasses.clear()
+  local yPos = 5
+  for index,line in utils.orderTable(text) do
+    glasses.addText(5, yPos, index .. ": " .. line, boxTextColor)
+    yPos = yPos + 10
+  end
+  glasses.addText(5, yPos, "Updated: " .. os.time(), boxTextColor)
+  yPos = yPos + 10
+  drawBox(yPos)
+  glasses.sync()
 end
 
 --Convert ME Display Bytes to smaller units
