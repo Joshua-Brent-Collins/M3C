@@ -98,12 +98,22 @@ function server()
   end
 end
 
+function deserializeKvResponse(kvResponse)
+  local response = textutils.unserialize(kvResponse)
+  
+  if response.status == 400 then
+    return response.msg
+  else
+    return textutils.unserialize(response.msg)
+  end
+end
+
 function clientGet(key)
   local kvReq = {}
   local respData = {}
   kvReq["cmd"] = "get"
   kvReq["dataKey"] = key
-  local serverId = rednet.lookup(kvProtocol, hostName) 
+  local serverId = utils.rednetLookupWithRetry(kvProtocol, hostName) 
   parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end) 
   return respData["message"]
 end
@@ -114,8 +124,7 @@ function clientStore(key, value)
   kvReq["cmd"] = "store"
   kvReq["dataKey"] = key
   kvReq["dataValue"] = value
-  local serverId = rednet.lookup(kvProtocol, hostName)
+  local serverId  = utils.rednetLookupWithRetry(kvProtocol, hostName)
   parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end)
   return respData["message"]
 end
-

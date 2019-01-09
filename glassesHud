@@ -10,16 +10,16 @@ function drawBox(height)
 end
 
 function display(text)
- glasses.clear()
-
- local yPos = 5
- for index,line in utils.orderTable(text) do
-   glasses.addText(5, yPos, index .. ": " .. line, boxTextColor)
-   yPos = yPos + 10
- end
-
- drawBox(yPos)
- glasses.sync()
+  glasses.clear()
+  local yPos = 5
+  for index,line in utils.orderTable(text) do
+    glasses.addText(5, yPos, index .. ": " .. line, boxTextColor)
+    yPos = yPos + 10
+  end
+  glasses.addText(5, yPos, "Updated: " .. os.time(), boxTextColor)
+  yPos = yPos + 10
+  drawBox(yPos)
+  glasses.sync()
 end
 
 --Convert ME Display Bytes to smaller units
@@ -44,9 +44,9 @@ end
 kvApi.initializeWirelessModems()
 
 while true do
-  local powerStatus = utils.getkvApiMsg(kvApi.clientGet("powerStatus"))
-  local meStatus = utils.getkvApiMsg(kvApi.clientGet("meStatus"))
-  local reactor = utils.getkvApiMsg(kvApi.clientGet("reactorStatus"))
+  local powerStatus = kvApi.deserializeKvResponse(kvApi.clientGet("powerStatus"))
+  local meStatus = kvApi.deserializeKvResponse(kvApi.clientGet("meStatus"))
+  local reactor = kvApi.deserializeKvResponse(kvApi.clientGet("reactorStatus"))
 
   local displayText={
     ["Power"] = utils.formatInt(powerStatus.Available) .. "%",

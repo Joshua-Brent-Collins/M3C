@@ -17,7 +17,7 @@ energyCells = utils.findAndWrapAll(energyCellBaseName)
 kvApi.initializeWirelessModems()
 
 while true do
-  for index,energyCell in pairs(energyCells) do
+  for index, energyCell in pairs(energyCells) do
     powerStats[totalDisplay] = powerStats[totalDisplay] + energyCell.getMaxEnergyStored() 
     powerStats[storeDisplay] = powerStats[storeDisplay] + energyCell.getEnergyStored()
   end
@@ -26,6 +26,7 @@ while true do
   powerStats[totalDisplay] = powerStats[totalDisplay]
   powerStats[storeDisplay] = powerStats[storeDisplay]
   
+  print("Sending to KV at " .. os.day() .. ": " .. os.time())
   kvApi.clientStore("powerStatus", textutils.serialize(powerStats))
   
   powerStats[totalDisplay] = 0
