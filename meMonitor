@@ -1,13 +1,10 @@
 os.loadAPI("M3C/utils")
 os.loadAPI("M3C/kvApi")
 
-local meDrive = utils.findAndWrap("tiledrive")
-local modem = utils.findAndWrap("modem")
-
 kvApi.initializeWirelessModems()
 
 while true do
-  local drives = meDrive.getAllStacks(false)
+  local meDrives = utils.findAndWrapAll("tiledrive")
   local driveData = {
     ["freeSlots"] = 0,
     ["usedSlots"] = 0,
@@ -16,19 +13,23 @@ while true do
     ["usedBytes"] = 0,
     ["totalBytes"] = 0
   }
-  
-  for index, drive in pairs(drives) do
-    local me_cell = drive.me_cell
+	
+  for bayKey, driveRack in pairs(meDrives) do
+    local drives = driveRack.getAllStacks(false)  
     
-    driveData["freeSlots"] = driveData["freeSlots"] + me_cell.freeTypes
-    driveData["usedSlots"] = driveData["usedSlots"] + me_cell.usedTypes
-    driveData["totalSlots"] = driveData["totalSlots"] + me_cell.totalTypes
+    for index, drive in pairs(drives) do
+      local me_cell = drive.me_cell
     
-    driveData["freeBytes"] = driveData["freeBytes"] + me_cell.freeBytes
-    driveData["usedBytes"] = driveData["usedBytes"] + me_cell.usedBytes
-    driveData["totalBytes"] = driveData["totalBytes"] + me_cell.totalBytes
+      driveData["freeSlots"] = driveData["freeSlots"] + me_cell.freeTypes
+      driveData["usedSlots"] = driveData["usedSlots"] + me_cell.usedTypes
+      driveData["totalSlots"] = driveData["totalSlots"] + me_cell.totalTypes
+    
+      driveData["freeBytes"] = driveData["freeBytes"] + me_cell.freeBytes
+      driveData["usedBytes"] = driveData["usedBytes"] + me_cell.usedBytes
+      driveData["totalBytes"] = driveData["totalBytes"] + me_cell.totalBytes
+    end
   end
-  
+
   print("Sending to KV at " .. os.day() .. ": " .. os.time())
   kvApi.clientStore("meStatus", textutils.serialize(driveData))
 
