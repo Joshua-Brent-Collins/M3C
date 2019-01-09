@@ -51,44 +51,41 @@ end
 -- The Stupid Simple Mail Transfer Protocol was developed exclusivly in and for Computercraft 1.7
 
 -- Networking
-if(kvApi.initializeWirelessModems()) then
-  echo "no modem detected... can't connect to KV"
+if(not kvApi.initializeWirelessModems()) then
+  echo ("no modem detected... can't connect to KV")
   exit(1)
-else
-    echo "Modem Detected!"
-
 end
 
 -- MAIN LOOP
 while true do
-  echo "Welcome to the SSMS!"
+  print("Welcome to the SSMS!")
   sleep (2)
-  TERM.clear()
-  echo "Please select from the following..."
-  echo "(1) LOGIN"
-  echo "(2) REGISTER"
-  input = io.read("n")
-  echo "USERNAME: "
-  username = io.read("*l")
-  echo "PASSWORD: "
-  password = io.read("*l")
+  term.clear()
+  print("Please select from the following...")
+  print("(1) LOGIN")
+  print("(2) REGISTER")
+  input = io.read()
+  print("USERNAME: ")
+  username = io.read()
+  print("PASSWORD: ")
+  password = io.read()
   if input == 2 then
     createUser(username, password)
     TERM.clear()
-    echo "USER REGISTERED!"
-    echo "attempting to login now..."
+    print("USER REGISTERED!")
+    print("attempting to login now...")
     sleep(2)
   end
 
   mailbox = login(username, password)
-  if not mailbox
-    echo "login failed... exiting()"
+  if not mailbox then
+    print("login failed... exiting()")
     exit(1)
   end
-  TERM.clear()
-  echo "Greeting, how may I serve you today..."
-  echo "(1) GET MAIL"
-  echo "(2) SEND MAIL"
+  term.clear()
+  print("Greeting, how may I serve you today...")
+  echo ("(1) GET MAIL")
+  echo ("(2) SEND MAIL")
   input = io.read("*n")
   if input == 1 then
     totalMessages = (#mailbox)    
@@ -99,26 +96,26 @@ while true do
       echo "sorry sir, I didn't quite get that..."
     end
     i = 0
-    for k,v in pairs(mailbox)
+    for k,v in pairs(mailbox) do 
       i = i + 1
-      if i = messageNumber then
+      if i == messageNumber then
         -- TODO: printMail()
         print(v)
       end
     end
   elseif (input == 2) then
-    TERM.clear()
-    echo "TO: "
+    term.clear()
+    print("TO: ")
     to = io.read()
-    echo "SUBJECT: "
+    print("SUBJECT: ")
     sub = io.read()
-    echo "MESSAGE: "
+    print("MESSAGE: ")
     msg = io.read()
     ts = (os.date() .. " " .. os.time())
     message = { TO=to, FROM=playerName, SUB=sub, MSG=msg, TS=ts }
     mailbox.insert(ts, message)
     updateMailbox(username, mailbox)
   else
-    TERM.clear()
+    term.clear()
   end
 end
