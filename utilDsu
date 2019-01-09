@@ -24,4 +24,5 @@ dsu["setDsus"] = function (dsus)
   dsu["buildData"]()
 
   --todo: pass kvStore name
+  --order data by qty
 end
