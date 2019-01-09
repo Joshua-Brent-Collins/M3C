@@ -1,0 +1,124 @@
+
+-- NOTE this system is build on the KV storage system and requires its API to run
+os.loadAPI("M3C/utils")
+os.loadAPI("M3C/kvApi")
+
+-- -- -- STUPID SIMPLE MAIL SYSTEM -- -- --
+   -- -- ------S__S---M__S-------- -- --
+      -- --<<</___/<<<\___\>>>---- --
+         --~~~^^^^~~~~~^^^^!~~~~~--
+-- A Simple Implementation of the Stupid Simple Mail Transfer Protocol (SSMTP) Server Daemon
+-- SSMTP is just a length(5) key value pair (a table in lua) containing the following key names in ALL CAPS 
+
+-- TO: uname(Case Sensitive)
+-- FROM: yourusername (Also Case Sensitive)
+-- SUB: subjectgoeshere
+-- MSG: (Message/Body/Data etc)
+-- TS: (timestamp)
+SSMTP = {TO = "", FROM = "", SUB = "", MSG = "", TS = 0}
+-- Data is stored as {UUID,{TO,FROM,SUB,MSG,TS}, ...}}
+-- where UUID is the KV key and TS is the key for the list of all emails attatched to a user. 
+
+-- GET (1) MAIL
+function getMail(key)
+  return kvApi.clientGet(key)
+end
+
+-- SEND MAIL
+function updateMailbox(playerUUID, mail)
+  return kvApi.clientStore(playerUUID, mail)
+end
+
+-- EITHER RETURNS FALSE OR RETURNS THE USERS MAILBOX
+function login(user, pass)
+    mailUsers = kvApi.clientGet("kvUsers")
+    for x,y in pairs(mailUsers) do
+        if x == user and y == pass then
+          username = user
+          return kvApi.clientGet(username)
+        end
+    end
+    echo "I'm afraid that is incorrect Sir..."
+    return false
+end
+
+function createUser(user, pass)
+    users = kvApi.clientGet("kvUsers")
+    users.insert(user, pass)
+    kvApi.clientStore("kvUsers", mailUsers)
+end
+
+-- The Stupid Simple Mail Transfer Protocol was developed exclusivly in and for Computercraft 1.7
+
+-- Networking
+if(kvApi.initializeWirelessModems()) then
+  echo "no modem detected... can't connect to KV"
+  exit(1)
+else
+    echo "Modem Detected!"
+
+end
+
+-- MAIN LOOP
+while true do
+  echo "Welcome to the SSMS!"
+  sleep (2)
+  TERM.clear()
+  echo "Please select from the following..."
+  echo "(1) LOGIN"
+  echo "(2) REGISTER"
+  input = io.read("n")
+  echo "USERNAME: "
+  username = io.read("*l")
+  echo "PASSWORD: "
+  password = io.read("*l")
+  if input == 2 then
+    createUser(username, password)
+    TERM.clear()
+    echo "USER REGISTERED!"
+    echo "attempting to login now..."
+    sleep(2)
+  end
+
+  mailbox = login(username, password)
+  if not mailbox
+    echo "login failed... exiting()"
+    exit(1)
+  end
+  TERM.clear()
+  echo "Greeting, how may I serve you today..."
+  echo "(1) GET MAIL"
+  echo "(2) SEND MAIL"
+  input = io.read("*n")
+  if input == 1 then
+    totalMessages = (#mailbox)    
+    echo ("You have " .. totalMessages .. " Messages.")
+    echo ("Which mail would you like to read" .. username)
+    messageNumber = io.read("*n")
+    if ((messageNumber > totalMessages) or (messageNumber < 0)) then
+      echo "sorry sir, I didn't quite get that..."
+    end
+    i = 0
+    for k,v in pairs(mailbox)
+      i = i + 1
+      if i = messageNumber then
+        -- TODO: printMail()
+        print(v)
+      end
+    end
+  elseif (input == 2) then
+    TERM.clear()
+    echo "TO: "
+    to = io.read()
+    echo "SUBJECT: "
+    sub = io.read()
+    echo "MESSAGE: "
+    msg = io.read()
+    ts = (os.date() .. " " .. os.time())
+    message = { TO=to, FROM=playerName, SUB=sub, MSG=msg, TS=ts }
+    mailbox.insert(ts, message)
+    updateMailbox(username, mailbox)
+  else
+    TERM.clear()
+  end
+end
