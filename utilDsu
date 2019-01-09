@@ -1,0 +1,27 @@
+os.loadAPI("M3C/utils")
+
+dsu = {}
+
+dsu["buildData"] = function ()
+  dsu["data"] = {}
+
+  for block, dsuBlk in pairs(dsu["dsus"]) do
+    local items = dsuBlk.getStoredItems()
+    if items ~= nil then
+      dsu["data"][items.display_name] = items.qty
+    end
+  end
+end
+
+dsu["print"] = function ()
+  for block, qty in pairs(dsu["data"]) do
+    print(block .. ": " .. utils.formatInt(qty))
+  end
+end
+
+dsu["setDsus"] = function (dsus)
+  dsu["dsus"] = dsus
+  dsu["buildData"]()
+
+  --todo: pass kvStore name
+end
