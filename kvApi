@@ -36,7 +36,7 @@ function loadFromDisk()
 end
 
 function initializeWirelessModems()
- connected = false
+ local connected = false
  local modems = utils.findAndWrapAll("modem")
  for name, wrapper in pairs(modems) do
    if wrapper.isWireless() == true then
