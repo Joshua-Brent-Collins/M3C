@@ -36,6 +36,7 @@ function loadFromDisk()
 end
 
 function initializeWirelessModems()
+ local connected = false
  local modems = utils.findAndWrapAll("modem")
  for name, wrapper in pairs(modems) do
    if wrapper.isWireless() == true then
@@ -43,8 +44,10 @@ function initializeWirelessModems()
      print("Initializing wireless " .. name)
      rednet.open(side)
      print("Initialized wireless " .. name)
+     connected = true
    end
  end 
+ return connected
 end
 
 function store(key, serialData)
