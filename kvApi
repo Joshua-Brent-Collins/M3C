@@ -5,6 +5,7 @@ local kvProtocol = "kvXChange"
 local hostName = "kvServer"
 --conversion from os.time() = 50 sec intervals 
 local backupFreqMin = 6
+local serverId = nil
 
 function flushToDisk()
   while true do
@@ -113,7 +114,9 @@ function clientGet(key)
   local respData = {}
   kvReq["cmd"] = "get"
   kvReq["dataKey"] = key
-  local serverId = utils.rednetLookupWithRetry(kvProtocol, hostName) 
+  if serverId == nil then
+    serverId = utils.rednetLookupWithRetry(kvProtocol, hostName)
+  end
   parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end) 
   return respData["message"]
 end
@@ -124,7 +127,9 @@ function clientStore(key, value)
   kvReq["cmd"] = "store"
   kvReq["dataKey"] = key
   kvReq["dataValue"] = value
-  local serverId  = utils.rednetLookupWithRetry(kvProtocol, hostName)
+  if serverId == nil then
+    serverId = utils.rednetLookupWithRetry(kvProtocol, hostName)
+  end
   parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end)
   return respData["message"]
 end
