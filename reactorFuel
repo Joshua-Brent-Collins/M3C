@@ -19,5 +19,5 @@ while true do
   print("Sending to KV at " .. os.day() .. ": " .. os.time())
   kvApi.clientStore("reactorStatus", contentsMsg)
    
-  sleep(5)
+  sleep(30)
 end

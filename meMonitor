@@ -33,5 +33,5 @@ while true do
   print("Sending to KV at " .. os.day() .. ": " .. os.time())
   kvApi.clientStore("meStatus", textutils.serialize(driveData))
 
-  sleep(5)
+  sleep(30)
 end
