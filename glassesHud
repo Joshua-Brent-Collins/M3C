@@ -4,21 +4,23 @@ os.loadAPI("M3C/kvApi")
 local glasses = utils.findAndWrap("openperipheral_bridge")
 local boxBgColor = 0xFFFFFF
 local boxTextColor = 0xF5F5F5
+local boxStartXCoord = 0
+local boxStartYCoord = 20
 
 function drawBox(height)
-  glasses.addBox(1, 1, 128, height, boxBgColor, .2)
+  glasses.addBox(boxStartXCoord, boxStartYCoord, 128, height, boxBgColor, .2)
 end
 
 function display(text)
   glasses.clear()
-  local yPos = 5
+  local yPos = boxStartYCoord
   for index,line in utils.orderTable(text) do
-    glasses.addText(5, yPos, index .. ": " .. line, boxTextColor)
+    glasses.addText(boxStartXCoord + 5, yPos, index .. ": " .. line, boxTextColor)
     yPos = yPos + 10
   end
-  glasses.addText(5, yPos, "Updated: " .. os.time(), boxTextColor)
+  glasses.addText(boxStartXCoord + 5, yPos, "Updated: " .. os.time(), boxTextColor)
   yPos = yPos + 10
-  drawBox(yPos)
+  drawBox(yPos - boxStartYCoord)
   glasses.sync()
 end
 
