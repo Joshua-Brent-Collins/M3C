@@ -5,6 +5,7 @@ local kvProtocol = "kvXChange"
 local hostName = "kvServer"
 --conversion from os.time() = 50 sec intervals 
 local backupFreqMin = 6
+local serverId = nil
 
 function flushToDisk()
   while true do
@@ -35,6 +36,7 @@ function loadFromDisk()
 end
 
 function initializeWirelessModems()
+ local connected = false
  local modems = utils.findAndWrapAll("modem")
  for name, wrapper in pairs(modems) do
    if wrapper.isWireless() == true then
@@ -42,8 +44,10 @@ function initializeWirelessModems()
      print("Initializing wireless " .. name)
      rednet.open(side)
      print("Initialized wireless " .. name)
+     connected = true
    end
  end 
+ return connected
 end
 
 function store(key, serialData)
@@ -60,16 +64,14 @@ end
 
 function recv(response)
   while response["message"] == nil do 
-    response["senderId"], response["message"], response["connInfo"] = rednet.receive(kvProtocol, 1)
+    response["senderId"], response["message"], response["connInfo"] = rednet.receive(kvProtocol, 5)
   end
 end
 
-function server()
-  initializeWirelessModems()
-  rednet.host(kvProtocol, hostName)
+function handleRequests()
   while true do
     local rawReqData = {}
-    parallel.waitForAny(function() recv(rawReqData) end, function() flushToDisk() end)
+    parallel.waitForAny(function() recv(rawReqData) end)
     local req = textutils.unserialize(rawReqData["message"])
     local resp = {}
     resp["status"] = 200
@@ -98,6 +100,12 @@ function server()
   end
 end
 
+function server()
+  initializeWirelessModems()
+  rednet.host(kvProtocol, hostName)
+  parallel.waitForAll(function() handleRequests() end, function() flushToDisk() end)
+end
+
 function deserializeKvResponse(kvResponse)
   local response = textutils.unserialize(kvResponse)
   
@@ -113,7 +121,9 @@ function clientGet(key)
   local respData = {}
   kvReq["cmd"] = "get"
   kvReq["dataKey"] = key
-  local serverId = utils.rednetLookupWithRetry(kvProtocol, hostName) 
+  if serverId == nil then
+    serverId = utils.rednetLookupWithRetry(kvProtocol, hostName)
+  end
   parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end) 
   return respData["message"]
 end
@@ -124,7 +134,9 @@ function clientStore(key, value)
   kvReq["cmd"] = "store"
   kvReq["dataKey"] = key
   kvReq["dataValue"] = value
-  local serverId  = utils.rednetLookupWithRetry(kvProtocol, hostName)
+  if serverId == nil then
+    serverId = utils.rednetLookupWithRetry(kvProtocol, hostName)
+  end
   parallel.waitForAll(function() recv(respData) end, function() send(serverId, kvReq) end)
   return respData["message"]
 end

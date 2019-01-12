@@ -75,10 +75,13 @@ end
 
 function rednetLookupWithRetry(protocol, host)
   local hostId = nil
-  while hostId == nil do
-    hostId = rednet.lookup(protocol, host)  
+  local MAX_ATTEMPTS = 20
+  local attempts = 0
+
+  while hostId == nil and attempts < MAX_ATTEMPTS do
+    attempts = attempts + 1
+    hostId = rednet.lookup(protocol, host)
     sleep(1)
   end
   return hostId
 end
-
