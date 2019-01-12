@@ -5,8 +5,8 @@ os.loadAPI("M3C/kvApi")
 
 -- -- -- STUPID SIMPLE MAIL SYSTEM -- -- --
    -- -- ------S__S---M__S-------- -- --
-      -- --<<</___/<<<\___\>>>---- --
-         --~~~^^^^~~~~~^^^^!~~~~~--
+      -- --<<</___/>_<\___\>>>---- --
+         --~~~^^^^~~~~~^^^^~~~~~--
 -- A Simple Implementation of the Stupid Simple Mail Transfer Protocol (SSMTP) Server Daemon
 -- SSMTP is just a length(5) key value pair (a table in lua) containing the following key names in ALL CAPS 
 
@@ -15,7 +15,14 @@ os.loadAPI("M3C/kvApi")
 -- SUB: subjectgoeshere
 -- MSG: (Message/Body/Data etc)
 -- TS: (timestamp)
-SSMTP = {TO = "", FROM = "", SUB = "", MSG = "", TS = 0}
+SSMTP =
+{
+  ["TO"] = "",
+  ["FROM"] = "",
+  ["SUB"] = "",
+  ["MSG"] = "",
+  ["TS"] = 0
+}
 -- Data is stored as {UUID,{TO,FROM,SUB,MSG,TS}, ...}}
 -- where UUID is the KV key and TS is the key for the list of all emails attatched to a user. 
 
@@ -25,27 +32,35 @@ function getMail(key)
 end
 
 -- SEND MAIL
-function updateMailbox(playerUUID, mail)
-  return kvApi.clientStore(playerUUID, mail)
+function updateMail(uame, mail)
+  return kvApi.clientStore(uname, mail)
 end
 
 -- EITHER RETURNS FALSE OR RETURNS THE USERS MAILBOX
 function login(user, pass)
-    mailUsers = kvApi.clientGet("kvUsers")
-    for x,y in pairs(mailUsers) do
-        if x == user and y == pass then
-          username = user
-          return kvApi.clientGet(username)
-        end
+    kvUsers = kvApi.clientGet("kvUsers")
+    kvApi.deserializeKvResponse(kvUsers)
+    if kvUsersstatus == 400 then
+      print("asdf")
+      kvApi.clientStore(
+      "kvUsers",{
+      ["username"]="test",
+      ["password"]="test"}
+      )
+    end                               
+    for x,y in pairs(kvUsers) do
+      if x == user and y == pass then
+        return kvApi.clientGet((user))
+      end
     end
-    echo "I'm afraid that is incorrect Sir..."
+    print("I'm afraid that is incorrect, Sir...")
     return false
 end
 
 function createUser(user, pass)
-    users = kvApi.clientGet("kvUsers")
+    users = kvApi.deserializeKvResponse(kvApi.clientGet("kvUsers"))
     users.insert(user, pass)
-    kvApi.clientStore("kvUsers", mailUsers)
+    kvApi.clientStore("kvUsers", textutils.serialize(users))
 end
 
 -- The Stupid Simple Mail Transfer Protocol was developed exclusivly in and for Computercraft 1.7
@@ -59,8 +74,6 @@ end
 -- MAIN LOOP
 while true do
   print("Welcome to the SSMS!")
-  sleep (2)
-  term.clear()
   print("Please select from the following...")
   print("(1) LOGIN")
   print("(2) REGISTER")
@@ -114,7 +127,7 @@ while true do
     ts = (os.date() .. " " .. os.time())
     message = { TO=to, FROM=playerName, SUB=sub, MSG=msg, TS=ts }
     mailbox.insert(ts, message)
-    updateMailbox(username, mailbox)
+    updateMail(username, mailbox)
   else
     term.clear()
   end
