@@ -23,38 +23,58 @@ SSMTP =
   ["MSG"] = "",
   ["TS"] = 0
 }
--- Data is stored as {UUID,{TO,FROM,SUB,MSG,TS}, ...}}
--- where UUID is the KV key and TS is the key for the list of all emails attatched to a user. 
+-- Data is stored as {USERNAME,{TO,FROM,SUB,MSG,TS}, ...}}
+-- where USERNAME is the KV key and TS is the key for the list of all emails attatched to a user. 
 
--- GET (1) MAIL
-function getMail(key)
-  return kvApi.clientGet(key)
+-- Clear Screen
+function resetTerm()
+  term.clear()
+  term.setBackgroundColor(colors.white)
+  term.setTextColor(colors.blue)
+  term.setCursorPos(0,0)
+end
+
+-- GET MAIL
+function getMail(username)
+  print("retrieving mail...")
+  kvMail = kvApi.deserializeKvResponse(kvApi.clientGet("kvMail"))
+  mailbox = {}
+  for index,mail in kvMail do
+    if mail.to = username
+      mailbox.insert(mail)
+    end
+  end
+  return mailbox
 end
 
 -- SEND MAIL
-function updateMail(uame, mail)
-  return kvApi.clientStore(uname, mail)
+function sendMail(uname, mail)
+  kvMail = kvApi.deserializeKvResponse(kvApi.clientGet("kvMail"))
+  kvMail.insert(mail)
+  kvApi.clientStore("kvMail", textutils.serialize(kvMail))
+  print("Mail Sent!")
 end
 
--- EITHER RETURNS FALSE OR RETURNS THE USERS MAILBOX
+-- RETURNS BOOL, TRUE FOR AUTH SUCESS
 function login(user, pass)
-    kvUsers = kvApi.clientGet("kvUsers")
-    kvApi.deserializeKvResponse(kvUsers)
-    if kvUsersstatus == 400 then
-      print("asdf")
-      kvApi.clientStore(
-      "kvUsers",{
-      ["username"]="test",
-      ["password"]="test"}
-      )
-    end                               
-    for x,y in pairs(kvUsers) do
-      if x == user and y == pass then
-        return kvApi.clientGet((user))
+kvUsers = kvApi.deserializeKvResponse(kvApi.clientGet("kvUsers"))
+    print(kvUsers)          
+    for index,data in pairs(kvUsers) do
+      if data.username == user and data.password == pass then     
+        return true
       end
     end
     print("I'm afraid that is incorrect, Sir...")
     return false
+end
+
+function printMail(mail)
+  print(mail.from)
+  print(mail.sub)
+  print("\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/")
+  print(mail.msg)
+  print(" ")
+  print(mail.ts)
 end
 
 function createUser(user, pass)
@@ -67,7 +87,7 @@ end
 
 -- Networking
 if(not kvApi.initializeWirelessModems()) then
-  echo ("no modem detected... can't connect to KV")
+  print("no modem detected... can't connect to KV")
   exit(1)
 end
 
@@ -83,37 +103,41 @@ while true do
   print("PASSWORD: ")
   password = io.read()
   if input == 2 then
-    createUser(username, password)
-    TERM.clear()
-    print("USER REGISTERED!")
-    print("attempting to login now...")
-    sleep(2)
+    if createUser(username, password) then
+      term.clear()
+      print("USER REGISTERED!")
+      print("attempting to login now")
+    else
+      print("REGISTRATION ERROR")
+      exit(1)
+    end
+      sleep(2)
   end
-
-  mailbox = login(username, password)
-  if not mailbox then
+  authenticated = login(username, password)
+  if authenticated then
+    print("User Authenticated!")
+    mailbox = getMail(username)
+  else 
     print("login failed... exiting()")
     exit(1)
   end
-  term.clear()
+  resetTerm()
   print("Greeting, how may I serve you today...")
-  echo ("(1) GET MAIL")
-  echo ("(2) SEND MAIL")
-  input = io.read("*n")
+  print("(1) GET MAIL")
+  print("(2) SEND MAIL")
+  input = io.read()
   if input == 1 then
     totalMessages = (#mailbox)    
-    echo ("You have " .. totalMessages .. " Messages.")
-    echo ("Which mail would you like to read" .. username)
-    messageNumber = io.read("*n")
+    print("You have " .. totalMessages .. " Messages.")
+    print("Which mail would you like to read" .. username)
+    messageNumber = io.read()
     if ((messageNumber > totalMessages) or (messageNumber < 0)) then
-      echo "sorry sir, I didn't quite get that..."
+      print "sorry sir, I didn't quite get that..."
     end
-    i = 0
-    for k,v in pairs(mailbox) do 
-      i = i + 1
-      if i == messageNumber then
-        -- TODO: printMail()
-        print(v)
+    for index,mail in pairs(mailbox) do
+        if(index == messageNumber) then
+          printMail(mail)
+        end
       end
     end
   elseif (input == 2) then
@@ -126,9 +150,9 @@ while true do
     msg = io.read()
     ts = (os.date() .. " " .. os.time())
     message = { TO=to, FROM=playerName, SUB=sub, MSG=msg, TS=ts }
-    mailbox.insert(ts, message)
-    updateMail(username, mailbox)
+    mailbox.insert(message)
+    sendMail(username, mailbox)
   else
-    term.clear()
+    resetTerm()
   end
 end
