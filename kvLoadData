@@ -1,0 +1,38 @@
+os.loadAPI("M3C/kvApi")
+os.loadAPI("M3C/utils")
+
+-- Utility script for loading data into kv store
+
+-- Create kvUsers table and populate with mail admin and test user
+function createUserTable()
+  print("wiping and generating new users table...")
+  admin = {
+  ["username"] = "ssmsadmin",
+  ["password"] = "ssmsadmin"
+  }
+  test = {
+  ["username"] = "test",
+  ["password"] = "test"
+  }
+  kvUsers = {admin,test}
+  payload = textutils.serialise(kvUsers)
+  print("Saving payload to kv as...")
+  print(payload)
+  kvApi.clientStore("kvUsers", payload)
+  print("payload saved")
+end
+
+-- Verify users exist in table
+function getUserTable()
+  kvUsers = kvApi.deserializeKvResponse(kvApi.clientGet("kvUsers"))
+  print("===============================")
+  print("Retrieving user list from store")
+  print("===============================")
+  for index,data in pairs(kvUsers) do
+    print(index .. "||" .. data.username)
+  end
+end
+
+-- put functions here to create or test storage 
+createUserTable()
+getUserTable()")
