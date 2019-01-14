@@ -3,16 +3,18 @@ os.loadAPI("M3C/kvApi")
 
 kvApi.initializeWirelessModems()
 
+local meDrives = {}
+local driveData = {}
+
 while true do
-  local meDrives = utils.findAndWrapAll("tiledrive")
-  local driveData = {
-    ["freeSlots"] = 0,
-    ["usedSlots"] = 0,
-    ["totalSlots"] = 0,
-    ["freeBytes"] = 0,
-    ["usedBytes"] = 0,
-    ["totalBytes"] = 0
-  }
+  meDrives = utils.findAndWrapAll("tiledrive")
+  
+  driveData["freeSlots"] = 0
+  driveData["usedSlots"] = 0
+  driveData["totalSlots"] = 0
+  driveData["freeBytes"] = 0
+  driveData["usedBytes"] = 0
+  driveData["totalBytes"] = 0
 	
   for bayKey, driveRack in pairs(meDrives) do
     local drives = driveRack.getAllStacks(false)  
@@ -30,8 +32,12 @@ while true do
     end
   end
 
+  driveData["Updated"] = os.time()
+  local message = textutils.serialize(driveData)
+  
+  print("Message = "..message)
   print("Sending to KV at " .. os.day() .. ": " .. os.time())
-  kvApi.clientStore("meStatus", textutils.serialize(driveData))
+  kvApi.clientStore("meStatus", message)
 
   sleep(30)
 end

@@ -8,7 +8,7 @@ local boxStartXCoord = 0
 local boxStartYCoord = 20
 
 function drawBox(height)
-  glasses.addBox(boxStartXCoord, boxStartYCoord, 128, height, boxBgColor, .2)
+  glasses.addBox(boxStartXCoord, boxStartYCoord, 170, height, boxBgColor, .2)
 end
 
 function display(text)
@@ -18,8 +18,7 @@ function display(text)
     glasses.addText(boxStartXCoord + 5, yPos, index .. ": " .. line, boxTextColor)
     yPos = yPos + 10
   end
-  glasses.addText(boxStartXCoord + 5, yPos, "Updated: " .. os.time(), boxTextColor)
-  yPos = yPos + 10
+  
   drawBox(yPos - boxStartYCoord)
   glasses.sync()
 end
@@ -53,11 +52,11 @@ while true do
   local reactor = kvApi.deserializeKvResponse(kvApi.clientGet("reactorStatus"))
 
   local displayText={
-    ["Power"] = utils.formatInt(powerStatus.Available) .. "%",
-    ["ME Slots"] = utils.formatInt(meStatus.usedSlots) .. "/" .. utils.formatInt(meStatus.totalSlots),
-    ["ME Bytes"] = convertMEBytes(meStatus.usedBytes) .. "/" .. convertMEBytes(meStatus.totalBytes),
-    ["Blutonium"] = utils.formatInt(reactor["Blutonium Ingot"]),
-    ["Yellorium"] = utils.formatInt(reactor["Yellorium Ingot"])
+    ["Power"] = utils.formatInt(powerStatus.Available) .. "%" .. " @ " .. powerStatus.Updated,
+    ["ME Slots"] = utils.formatInt(meStatus.usedSlots) .. "/" .. utils.formatInt(meStatus.totalSlots) .. " @ " .. meStatus.Updated,
+    ["ME Bytes"] = convertMEBytes(meStatus.usedBytes) .. "/" .. convertMEBytes(meStatus.totalBytes) .. " @ " .. meStatus.Updated,
+    ["Blutonium"] = utils.formatInt(reactor["Blutonium Ingot"]) .. " @ " .. reactor["Updated"],
+    ["Yellorium"] = utils.formatInt(reactor["Yellorium Ingot"]) .. " @ " .. reactor["Updated"]
   }
 
   display(displayText)
