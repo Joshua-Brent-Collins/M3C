@@ -1,23 +1,26 @@
 os.loadAPI("M3C/kvApi")
 os.loadAPI("M3C/utils")
 
-local blutoniumDSU = peripheral.wrap("deep_storage_unit_0")
-local yelloriumDSU = peripheral.wrap("deep_storage_unit_1")
-local modem = utils.findAndWrap("modem")
-
+local dsus = {}
+local contentsHash = {}
+  
 kvApi.initializeWirelessModems()
 
 while true do
-  local blutoniumIngots = blutoniumDSU.getStoredItems().qty
-  local yelloriumIngots = yelloriumDSU.getStoredItems().qty
-  local contentsHash = {}
+  dsus = utils.findAndWrapAll("deep_storage_unit")
   
-  contentsHash["Blutonium"] = blutoniumIngots
-  contentsHash["Yellorium"] = yelloriumIngots
-  contentsMsg = textutils.serialize(contentsHash)
+  for dsuKey, dsu in pairs(dsus) do
+    dsuItems = dsu.getStoredItems()
+    contentsHash[dsuItems.display_name] = dsuItems.qty
+  end
+  
+  contentsHash["Updated"] = os.time()
+  
+  local contentsMsg = textutils.serialize(contentsHash)
 
+  print("Message = " .. contentsMsg)
   print("Sending to KV at " .. os.day() .. ": " .. os.time())
   kvApi.clientStore("reactorStatus", contentsMsg)
-   
+
   sleep(30)
 end

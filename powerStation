@@ -2,21 +2,20 @@ os.loadAPI("M3C/utils")
 os.loadAPI("M3C/kvApi")
 
 local energyCellBaseName = "tile_thermalexpansion_cell_reinforced_name"
-local energyCells = {}
-local powerStats = {}
 
 local totalDisplay = "Total"
 local storeDisplay = "Stored"
 local percentDisplay = "Available"
-
-powerStats[totalDisplay] = 0
-powerStats[storeDisplay] = 0
-
-energyCells = utils.findAndWrapAll(energyCellBaseName)
+local energyCells = {}
+local powerStats = {}
 
 kvApi.initializeWirelessModems()
 
 while true do
+  energyCells = utils.findAndWrapAll(energyCellBaseName)
+  powerStats[totalDisplay] = 0
+  powerStats[storeDisplay] = 0
+  
   for index, energyCell in pairs(energyCells) do
     powerStats[totalDisplay] = powerStats[totalDisplay] + energyCell.getMaxEnergyStored() 
     powerStats[storeDisplay] = powerStats[storeDisplay] + energyCell.getEnergyStored()
@@ -25,11 +24,12 @@ while true do
   powerStats[percentDisplay] = math.floor(tonumber(powerStats[storeDisplay])/tonumber(powerStats[totalDisplay]) * 100)
   powerStats[totalDisplay] = powerStats[totalDisplay]
   powerStats[storeDisplay] = powerStats[storeDisplay]
+  powerStats["Updated"] = os.time()
   
+  local message = textutils.serialize(powerStats)
+  print("Message = " .. message)
   print("Sending to KV at " .. os.day() .. ": " .. os.time())
-  kvApi.clientStore("powerStatus", textutils.serialize(powerStats))
-  
-  powerStats[totalDisplay] = 0
-  powerStats[storeDisplay] = 0
+  kvApi.clientStore("powerStatus", message)
+
   sleep(30)
 end
