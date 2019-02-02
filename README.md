@@ -36,13 +36,18 @@ term.setCursorPos(1,1)
 * Requires [this JSON ComputerCraft API](http://www.computercraft.info/forums2/index.php?/topic/5854-json-api-v201-for-computercraft/) named as `json` and placed in a `scripts/` folder.
 
 ## glassesHud
-[Insert Description/Use Here]
+* Requires use of a [Terminal Glasses Bridge](https://ftbwiki.org/Terminal_Glasses_Bridge) and [Terminal Glasses](https://ftbwiki.org/Terminal_Glasses).
+* This script reads values from the K/V server and prints them out onto the HUD of any player with Terminal Glasses that have been connected to the Terminal Glasses Bridge used by the script.
+* Prints a semi-transparent box in the upper-left hand corner with one stat from the K/V server per line.
+* Starts with a 20-pixel buffer from the top for players who use [jetpacks](https://ftb.gamepedia.com/Jetpack_(Simply_Jetpacks)) from the Simply Jetpacks mod.
 
 ## kv
-[Insert Description/Use Here]
+* A very lightweight script designed to be the server in the K/V server.
+* Started up using `kv server restore`. If you don't wish to restore your K/V pairs from the backed up floppy disk, you can simply use `kv server` instead.
 
 ## kvApi
-[Insert Description/Use Here]
+* Houses the real meat of the K/V server system.
+* Contains all methods needed to fully utilize the K/V server. Primary methods are `clientGet()`, `clientStore()`, and `deserializeKvResponse()`.
 
 ## meMonitor
 * Requires a K/V server setup.
@@ -76,7 +81,7 @@ term.setCursorPos(1,1)
 * We used this to initially help regulate our [Mass Fabricator](https://ftbwiki.org/Mass_Fabricator) from using too much power early in the game. We wound up using a more specific script later on that balanced power usage with [scrap](https://ftbwiki.org/Scrap) consumption.
 
 ## sesame
-* One of our sillier scripts. This script utilizes a Sensor (similar to changeLights above) to detect when a player has approached. Upon doing so, a door chime was played using a [Note Block](https://minecraft.gamepedia.com/Note_Block) and a redstone signal was sent out on both sides. This redstone signal was sent to some sticky pistons for a vanilla-like automation of a door. After existing the Sensor range, the opposite door chime would play and the redstone signal would stop, thus closing the doors.
+* One of our sillier scripts. This script utilizes a Sensor (similar to changeLights above) to detect when a player has approached. Upon doing so, a door chime is played using a [Note Block](https://minecraft.gamepedia.com/Note_Block) and a redstone signal is sent out on both sides. Our redstone signal is sent to two sticky pistons for a vanilla-like automation of a door. After exiting the Sensor range, the opposite door chime plays and the redstone signal stops.
 
 ## utils
 * Simply a utility library. It provides the following utilities:
@@ -89,4 +94,4 @@ term.setCursorPos(1,1)
     * `printTable` - A simple script to iterate through a table and print it out to the active terminal screen.
     * `formatInt` - Formats an integer to have comma separators. If the argument cannot be cast as a numeric, returns `-1`.
     * `round` - Rounds a number to a specific number of decimal places.
-    * `rednetLookupWithRetry` - Fixes a semi-common bug of a Rednet lookup failing. Attempts a finite amount of times to lookup a specified protocol and host on Rednet before giving up.
+    * `rednetLookupWithRetry` - Fixes a semi-common bug of a Rednet lookup failing. Attempts a finite amount of times to look up a specified protocol and host on Rednet before giving up and returning `nil`.
