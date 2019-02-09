@@ -85,3 +85,22 @@ function rednetLookupWithRetry(protocol, host)
   end
   return hostId
 end
+
+--Convert ME Display Bytes to smaller units
+function convertMEBytes(bytes)
+  local byteLength = string.len(bytes)
+  local postfix = "B"
+
+  if byteLength > 3 and byteLength <= 6 then
+    postfix = "KB"
+    bytes = bytes / 1000
+  elseif byteLength > 6 and byteLength <= 9 then
+    postfix = "MB"
+    bytes = bytes / 1000000
+  elseif byteLength > 9 and byteLength <= 12 then
+    postfix = "GB"
+    bytes = bytes / 1000000000
+  end
+
+  return round(bytes, 1) .. postfix
+end

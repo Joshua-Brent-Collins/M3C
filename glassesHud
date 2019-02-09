@@ -23,25 +23,6 @@ function display(text)
   glasses.sync()
 end
 
---Convert ME Display Bytes to smaller units
-function convertMEBytes(bytes)
-  local byteLength = string.len(bytes)
-  local postfix = "B"
-
-  if byteLength > 3 and byteLength <= 6 then
-    postfix = "KB"
-    bytes = bytes / 1000
-  elseif byteLength > 6 and byteLength <= 9 then
-    postfix = "MB"
-    bytes = bytes / 1000000
-  elseif byteLength > 9 and byteLength <= 12 then
-    postfix = "GB"
-    bytes = bytes / 1000000000
-  end
-
-  return utils.round(bytes, 1) .. postfix
-end
-
 kvApi.initializeWirelessModems()
 
 while true do
@@ -54,7 +35,7 @@ while true do
   local displayText={
     ["Power"] = utils.formatInt(powerStatus.Available) .. "%" .. " @ " .. powerStatus.Updated,
     ["ME Slots"] = utils.formatInt(meStatus.usedSlots) .. "/" .. utils.formatInt(meStatus.totalSlots) .. " @ " .. meStatus.Updated,
-    ["ME Bytes"] = convertMEBytes(meStatus.usedBytes) .. "/" .. convertMEBytes(meStatus.totalBytes) .. " @ " .. meStatus.Updated,
+    ["ME Bytes"] = utils.convertMEBytes(meStatus.usedBytes) .. "/" .. utils.convertMEBytes(meStatus.totalBytes) .. " @ " .. meStatus.Updated,
     ["Blutonium"] = utils.formatInt(reactor["Blutonium Ingot"]) .. " @ " .. reactor["Updated"],
     ["Yellorium"] = utils.formatInt(reactor["Yellorium Ingot"]) .. " @ " .. reactor["Updated"]
   }
