@@ -60,11 +60,15 @@ function printTable(tableData)
   end
 end
 
-function formatInt(num)
+function formatInt(num, separator)
+  if separator == nil then
+    separator = ","
+  end
+  
   if tonumber(num) == nil then
     return -1
   else
-    return tostring(math.floor(num)):reverse():gsub("(%d%d%d)", "%1,"):gsub(",(%-?)$", "%1"):reverse()
+    return tostring(math.floor(num)):reverse():gsub("(%d%d%d)", "%1"..separator):gsub(",(%-?)$", "%1"):reverse()
   end
 end
 
