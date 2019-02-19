@@ -1,6 +1,7 @@
 os.loadAPI("scripts/json")
+os.loadAPI("M3C/utils")
 
-monitor = peripheral.wrap("back")
+monitor = utils.findAndWrap("monitor")
 term.setTextColor(1)
 term.clear()
 term.setCursorPos(1.0, 1.0)
