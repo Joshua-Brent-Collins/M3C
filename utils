@@ -16,7 +16,6 @@ end
 
 function findAndWrap(devType)
   local devices = peripheral.getNames()
-  local monitor = nil
   for id, devName in pairs(devices) do
     if peripheral.getType(devName) == devType then
       return peripheral.wrap(devName)
@@ -28,7 +27,7 @@ function findAndWrapAll(devType)
   local deviceWrappers = {}
   local devices = peripheral.getNames()
   for id, devName in pairs(devices) do
-    if peripheral.getType(devName) == devType then
+    if devName:sub(1, #devType) == devType then
       deviceWrappers[(devName .. "_" .. devType)] = peripheral.wrap(devName)
     end
   end

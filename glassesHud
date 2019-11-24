@@ -32,14 +32,19 @@ while true do
   sleep(5)
   local reactor = kvApi.deserializeKvResponse(kvApi.clientGet("reactorStatus"))
 
-  local displayText={
-    ["Power"] = utils.formatInt(powerStatus.Available) .. "%" .. " @ " .. powerStatus.Updated,
-    ["ME Slots"] = utils.formatInt(meStatus.usedSlots) .. "/" .. utils.formatInt(meStatus.totalSlots) .. " @ " .. meStatus.Updated,
-    ["ME Bytes"] = utils.convertMEBytes(meStatus.usedBytes) .. "/" .. utils.convertMEBytes(meStatus.totalBytes) .. " @ " .. meStatus.Updated,
-    ["Blutonium"] = utils.formatInt(reactor["Blutonium Ingot"]) .. " @ " .. reactor["Updated"],
-    ["Yellorium"] = utils.formatInt(reactor["Yellorium Ingot"]) .. " @ " .. reactor["Updated"]
-  }
-
+  local displayText={}
+  if powerStatus ~= "No key found!" then
+    displayText["Power"] = utils.formatInt(powerStatus.Available) .. "%" .. " @ " .. powerStatus.Updated
+  end
+  if meStatus ~= "No key found!" then
+    displayText["ME Slots"] = utils.formatInt(meStatus.usedSlots) .. "/" .. utils.formatInt(meStatus.totalSlots) .. " @ " .. meStatus.Updated
+    displayText["ME Bytes"] = utils.convertMEBytes(meStatus.usedBytes) .. "/" .. utils.convertMEBytes(meStatus.totalBytes) .. " @ " .. meStatus.Updated
+  end
+  if reactor ~= "No key found!" then
+    displayText["Blutonium"] = utils.formatInt(reactor["Blutonium Ingot"]) .. " @ " .. reactor["Updated"]
+    displayText["Yellorium"] = utils.formatInt(reactor["Yellorium Ingot"]) .. " @ " .. reactor["Updated"]
+  end
+  
   display(displayText)
   sleep(25)
 end
