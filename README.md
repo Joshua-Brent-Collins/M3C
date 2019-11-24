@@ -90,6 +90,7 @@ term.setCursorPos(1,1)
         * Supports a peripheral that is connected via a Wired Modem.
     * `findAndWrapAll` - Find all peripherals on any arbitrary side of the computer based on the peripheral's type. Returns a table of the wrapped peripherals.
         * This supports any peripherals that are connected via a Wired Modem.
+        * Specify second argument as `true` if the argument you're passing should match peripheral names based on a "starts with" criteria.
     * `orderTable` - Used in conjunction with a `for` loop to iterate through a table that is sorted in alpha order based on the keys of the table.
     * `printTable` - A simple script to iterate through a table and print it out to the active terminal screen.
     * `formatInt` - Formats an integer to have comma separators. If the argument cannot be cast as a numeric, returns `-1`.

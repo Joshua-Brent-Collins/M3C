@@ -12,7 +12,7 @@ local powerStats = {}
 kvApi.initializeWirelessModems()
 
 while true do
-  energyCells = utils.findAndWrapAll(energyCellBaseName)
+  energyCells = utils.findAndWrapAll(energyCellBaseName, true)
   powerStats[totalDisplay] = 0
   powerStats[storeDisplay] = 0
   

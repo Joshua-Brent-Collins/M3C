@@ -23,11 +23,13 @@ function findAndWrap(devType)
   end
 end
 
-function findAndWrapAll(devType)
+function findAndWrapAll(devType, useStartsWith)
+  useStartsWith = useStartsWith or false
+
   local deviceWrappers = {}
   local devices = peripheral.getNames()
   for id, devName in pairs(devices) do
-    if devName:sub(1, #devType) == devType then
+    if (useStartsWith == true and devName:sub(1, #devType) == devType) or peripheral.getType(devName) == devType then
       deviceWrappers[(devName .. "_" .. devType)] = peripheral.wrap(devName)
     end
   end
