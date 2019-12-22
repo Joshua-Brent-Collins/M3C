@@ -1,3 +1,13 @@
+function findItemIndexInTable(table, item)
+  for index, value in pairs(table) do
+    if value == item then
+      return index
+    end
+  end
+
+  return nil
+end
+
 function drawBargraph(fillPercent, mon, fillColor)
   local orgTerm = term.current()
   local graphCoords = {}
