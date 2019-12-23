@@ -172,6 +172,10 @@ function findItemToDefrag(actualMeItems)
 end
 
 function exportItem(item)
+	if item == nil then
+		return true
+	end
+	
 	local details = interface.getItemDetail(item.fingerprint).basic();
 	itemName = details.display_name
 	if selector then
