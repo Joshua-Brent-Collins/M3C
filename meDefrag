@@ -149,36 +149,7 @@ function itemKey(item)
   return key
 end
 
-function findItemToDefrag()
-	local item
-	local allMeItems = interface.getAvailableItems()
-	local storedMeItems = {} --filtered from allMeItems to exclude qty <= 0
-	local meItemsSet = {}
-
-	for _, item in pairs(allMeItems) do
-		if item.size > 0 then
-			table.insert(storedMeItems, item)
-		end
-	end
-
-	local actualMeItems = storedMeItems --filtered from storedMeItems to exclude items that are entirely contained within DSUs
-
-	for _, meItem in pairs(storedMeItems) do
-		meItemsSet[meItem.fingerprint.id..':'..meItem.fingerprint.dmg] = meItem
-	end
-
-	for _, dsu in pairs(dsus) do
-		local dsuItem = dsu.getStoredItems()
-		local meItem = meItemsSet[dsuItem.id..':'..dsuItem.dmg]
-
-		if meItem ~= {} then
-			if meItem.size <= dsuItem.qty then
-				local removeIndex = utils.findItemIndexInTable(storedMeItems, meItem)
-				table.remove(actualMeItems, removeIndex)
-			end
-		end
-	end
-
+function findItemToDefrag(actualMeItems)
 	itemName = 0
 	inDrives = 0
 	inBuffer = 0
@@ -425,7 +396,35 @@ mon.setTextScale(1)
 mon.setBackgroundColor(colors.black)
 mon.clear()
 
-while findItemToDefrag() do
+local allMeItems = interface.getAvailableItems()
+local storedMeItems = {} --filtered from allMeItems to exclude qty <= 0
+local meItemsSet = {}
+
+for _, item in pairs(allMeItems) do
+	if item.size > 0 then
+		table.insert(storedMeItems, item)
+	end
+end
+
+local actualMeItems = storedMeItems --filtered from storedMeItems to exclude items that are entirely contained within DSUs
+
+for _, meItem in pairs(storedMeItems) do
+	meItemsSet[meItem.fingerprint.id..':'..meItem.fingerprint.dmg] = meItem
+end
+
+for _, dsu in pairs(dsus) do
+	local dsuItem = dsu.getStoredItems()
+	local meItem = meItemsSet[dsuItem.id..':'..dsuItem.dmg]
+
+	if meItem ~= {} then
+		if meItem.size <= dsuItem.qty then
+			local removeIndex = utils.findItemIndexInTable(storedMeItems, meItem)
+			table.remove(actualMeItems, removeIndex)
+		end
+	end
+end
+
+while findItemToDefrag(actualMeItems) do
 
 end
 
