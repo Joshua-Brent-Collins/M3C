@@ -106,8 +106,8 @@ function updateTask(msg, color, percent)
 	if itemName ~= 0 then
 		drawText(2, 9, itemName, colors.white, colors.black)
 
-		drawText(2, 10, ""..inDrives, colors.lightGray, colors.black)
-		drawText(math.floor(w-string.len(""..inBuffer)), 10, ""..inBuffer, colors.lightGray, colors.black)
+		drawText(2, 10, ""..utils.formatInt(inDrives), colors.lightGray, colors.black)
+		drawText(math.floor(w-string.len(""..utils.formatInt(inBuffer))), 10, ""..utils.formatInt(inBuffer), colors.lightGray, colors.black)
 		
 		color = colors.orange
 		
@@ -131,7 +131,7 @@ function updateProgress()
 	local percentString = percent.."%"
 	drawText(math.floor(w - string.len(percentString)), 2, percentString, colors.white, colors.black)
 
-	drawText(2, 3, finishedItemsCount.."/"..totalItemsCount, colors.lightGray, colors.black)
+	drawText(2, 3, utils.formatInt(finishedItemsCount).."/"..utils.formatInt(totalItemsCount), colors.lightGray, colors.black)
 	
 	local barLength = w-2
 	local barBreak = math.ceil(barLength/100*percent)
