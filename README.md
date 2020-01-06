@@ -49,6 +49,14 @@ term.setCursorPos(1,1)
 * Houses the real meat of the K/V server system.
 * Contains all methods needed to fully utilize the K/V server. Primary methods are `clientGet()`, `clientStore()`, and `deserializeKvResponse()`.
 
+## meDefrag
+* Used for defragmenting your ME Storage Cells from Applied Energistics 2.
+* Taken from https://www.reddit.com/r/feedthebeast/comments/5qclhu/ae2_perfect_storage_cell_defragmentation/. This version contains a few tweaks to the existing script, however.
+    * Correctly determine how many stacks you have of an item by using the item's stack size rather than always using 64.
+    * Ignore any item that is in the ME that is actually 100% contained within a Deep Storage Unit.
+    * Ignore any item that is not present in the ME (0 quantity) but has a crafting recipe.
+    * Increase efficiency at the cost of retrieving new items added to the ME by not re-querying the ME for items after each item is defragmented.
+
 ## meMonitor
 * Requires a K/V server setup.
 * Every 30 seconds, read the drive data from a [ME Network](https://ftbwiki.org/ME_Network) and send that data to the K/V server. Also sends the `os.time()` to represent when the data was last gathered.
@@ -90,6 +98,8 @@ term.setCursorPos(1,1)
         * Supports a peripheral that is connected via a Wired Modem.
     * `findAndWrapAll` - Find all peripherals on any arbitrary side of the computer based on the peripheral's type. Returns a table of the wrapped peripherals.
         * This supports any peripherals that are connected via a Wired Modem.
+        * Specify second argument as `true` if the argument you're passing should match peripheral names based on a "starts with" criteria.
+    * `findItemIndexInTable` - Get the index of an item within a table so that you can use `table.remove(table, index)` to remove it. Returns `nil` if the item was not found.
     * `orderTable` - Used in conjunction with a `for` loop to iterate through a table that is sorted in alpha order based on the keys of the table.
     * `printTable` - A simple script to iterate through a table and print it out to the active terminal screen.
     * `formatInt` - Formats an integer to have comma separators. If the argument cannot be cast as a numeric, returns `-1`.

@@ -1,3 +1,13 @@
+function findItemIndexInTable(table, item)
+  for index, value in pairs(table) do
+    if value == item then
+      return index
+    end
+  end
+
+  return nil
+end
+
 function drawBargraph(fillPercent, mon, fillColor)
   local orgTerm = term.current()
   local graphCoords = {}
@@ -16,7 +26,6 @@ end
 
 function findAndWrap(devType)
   local devices = peripheral.getNames()
-  local monitor = nil
   for id, devName in pairs(devices) do
     if peripheral.getType(devName) == devType then
       return peripheral.wrap(devName)
@@ -24,11 +33,13 @@ function findAndWrap(devType)
   end
 end
 
-function findAndWrapAll(devType)
+function findAndWrapAll(devType, useStartsWith)
+  useStartsWith = useStartsWith or false
+
   local deviceWrappers = {}
   local devices = peripheral.getNames()
   for id, devName in pairs(devices) do
-    if peripheral.getType(devName) == devType then
+    if (useStartsWith == true and devName:sub(1, #devType) == devType) or peripheral.getType(devName) == devType then
       deviceWrappers[(devName .. "_" .. devType)] = peripheral.wrap(devName)
     end
   end

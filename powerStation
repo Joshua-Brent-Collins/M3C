@@ -1,7 +1,7 @@
 os.loadAPI("M3C/utils")
 os.loadAPI("M3C/kvApi")
 
-local energyCellBaseName = "tile_thermalexpansion_cell_reinforced_name"
+local energyCellBaseName = "tile_thermalexpansion_cell_"
 
 local totalDisplay = "Total"
 local storeDisplay = "Stored"
@@ -12,7 +12,7 @@ local powerStats = {}
 kvApi.initializeWirelessModems()
 
 while true do
-  energyCells = utils.findAndWrapAll(energyCellBaseName)
+  energyCells = utils.findAndWrapAll(energyCellBaseName, true)
   powerStats[totalDisplay] = 0
   powerStats[storeDisplay] = 0
   
